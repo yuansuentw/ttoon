@@ -1,0 +1,16 @@
+{
+  "name": "@ttoon/workspace",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "node",
+    "web"
+  ],
+  "scripts": {
+    "ensure:wasm-bridge": "node shared/scripts/ensure-wasm-bridge.mjs",
+    "build": "npm run ensure:wasm-bridge && npm run build -w @ttoon/shared",
+    "test": "npm run ensure:wasm-bridge && npm run test -w @ttoon/shared",
+    "pack:dry-run": "npm run ensure:wasm-bridge && npm pack -w @ttoon/shared --dry-run && npm pack -w @ttoon/node --dry-run && npm pack -w @ttoon/web --dry-run",
+    "release:check": "npm run build && npm run test && npm run pack:dry-run"
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "description": "read_arrow tests: text -> ArrowTable (R13). T-JSON list-of-objects accepts sparse rows; T-TOON tabular follows header order/width; nested row values are rejected.",
+  "tests": [
+    {
+      "id": "read_arrow_tjson_basic",
+      "description": "T-JSON list of objects -> ArrowTable with inferred schema",
+      "input": "[{\"name\": \"Alice\", \"score\": 95}, {\"name\": \"Bob\", \"score\": 87}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 2,
+      "expected_field_order": ["name", "score"],
+      "expected_schema": {
+        "name": { "type": "utf8" },
+        "score": { "type": "int64" }
+      }
+    },
+    {
+      "id": "read_arrow_tjson_floats",
+      "description": "T-JSON list with float column -> Float64 in schema",
+      "input": "[{\"x\": 1.5}, {\"x\": 2.5}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 1,
+      "expected_schema": {
+        "x": { "type": "float64" }
+      }
+    },
+    {
+      "id": "read_arrow_single_row",
+      "description": "Single-element list -> single-row ArrowTable",
+      "input": "[{\"id\": 1, \"active\": true}]",
+      "expected_num_rows": 1,
+      "expected_num_cols": 2,
+      "expected_schema": {
+        "id": { "type": "int64" },
+        "active": { "type": "bool" }
+      }
+    },
+    {
+      "id": "read_arrow_nullable_column",
+      "description": "Column with null values -> nullable schema field",
+      "input": "[{\"a\": 1, \"b\": null}, {\"a\": 2, \"b\": 42}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 2,
+      "expected_schema": {
+        "a": { "type": "int64" },
+        "b": { "type": "int64", "nullable": true }
+      }
+    },
+    {
+      "id": "read_arrow_native_temporal_types",
+      "description": "Typed temporal units map to native Arrow temporal schema",
+      "input": "[{\"d\": 2026-01-15, \"t\": 07:30:00.123456, \"ts_utc\": 2026-02-27T10:30:00.123456Z, \"ts_local\": 2026-02-27T10:30:00.123456}, {\"d\": 2026-01-16, \"t\": 08:45:01, \"ts_utc\": 2026-02-28T11:31:00Z, \"ts_local\": 2026-02-28T11:31:00}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 4,
+      "expected_schema": {
+        "d": { "type": "date32" },
+        "t": { "type": "time64", "unit": "microsecond" },
+        "ts_utc": { "type": "timestamp", "unit": "microsecond", "timezone": "UTC" },
+        "ts_local": { "type": "timestamp", "unit": "microsecond" }
+      }
+    },
+    {
+      "id": "read_arrow_native_decimal128_uuid_binary",
+      "description": "Typed decimal128/uuid/binary map to native Arrow schema without Utf8 downgrade",
+      "input": "[{\"amount\": 123.45m, \"id\": uuid(550e8400-e29b-41d4-a716-446655440000), \"payload\": hex(DEADBEEF)}, {\"amount\": -0.10m, \"id\": uuid(426ac144-7477-4a90-93de-33f879c62d4d), \"payload\": b64(AQID)}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 3,
+      "expected_schema": {
+        "amount": { "type": "decimal128", "precision": 5, "scale": 2 },
+        "id": { "type": "uuid" },
+        "payload": { "type": "binary" }
+      }
+    },
+    {
+      "id": "read_arrow_native_decimal256",
+      "description": "High-precision decimals promote to Decimal256 instead of Utf8",
+      "input": "[{\"amount\": 1234567890123456789012345678901234567890.12m}, {\"amount\": -1000000000000000000000000000000000000000.00m}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 1,
+      "expected_schema": {
+        "amount": { "type": "decimal256", "precision": 42, "scale": 2 }
+      }
+    },
+    {
+      "id": "read_arrow_nullable_typed_columns",
+      "description": "Typed columns with nulls stay on native Arrow schema",
+      "input": "[{\"amount\": null, \"id\": null, \"day\": null}, {\"amount\": 123.45m, \"id\": uuid(550e8400-e29b-41d4-a716-446655440000), \"day\": 2026-01-15}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 3,
+      "expected_schema": {
+        "amount": { "type": "decimal128", "precision": 5, "scale": 2, "nullable": true },
+        "id": { "type": "uuid", "nullable": true },
+        "day": { "type": "date32", "nullable": true }
+      }
+    },
+    {
+      "id": "read_arrow_all_null_column",
+      "description": "All-null column stays as Arrow Null",
+      "input": "[{\"v\": null}, {\"v\": null}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 1,
+      "expected_schema": {
+        "v": { "type": "null", "nullable": true }
+      }
+    },
+    {
+      "id": "read_arrow_tjson_sparse_first_seen_order",
+      "description": "T-JSON sparse rows infer schema from batch-level first-seen field order",
+      "input": "[{\"a\": 1}, {\"b\": 2}, {\"a\": 3, \"c\": 4}]",
+      "expected_num_rows": 3,
+      "expected_num_cols": 3,
+      "expected_field_order": ["a", "b", "c"],
+      "expected_schema": {
+        "a": { "type": "int64" },
+        "b": { "type": "int64" },
+        "c": { "type": "int64" }
+      },
+      "expected_rows": [
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "int", "value": 1 },
+            "b": { "type": "null" },
+            "c": { "type": "null" }
+          }
+        },
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "null" },
+            "b": { "type": "int", "value": 2 },
+            "c": { "type": "null" }
+          }
+        },
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "int", "value": 3 },
+            "b": { "type": "null" },
+            "c": { "type": "int", "value": 4 }
+          }
+        }
+      ]
+    },
+    {
+      "id": "read_arrow_tjson_duplicate_keys_last_write_wins",
+      "description": "T-JSON duplicate keys use last-write-wins without changing schema order",
+      "input": "[{\"a\": 1, \"a\": 2}, {\"b\": 1, \"a\": 3, \"b\": 4}]",
+      "expected_num_rows": 2,
+      "expected_num_cols": 2,
+      "expected_field_order": ["a", "b"],
+      "expected_schema": {
+        "a": { "type": "int64" },
+        "b": { "type": "int64" }
+      },
+      "expected_rows": [
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "int", "value": 2 },
+            "b": { "type": "null" }
+          }
+        },
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "int", "value": 3 },
+            "b": { "type": "int", "value": 4 }
+          }
+        }
+      ]
+    },
+    {
+      "id": "read_arrow_tjson_duplicate_nested_overwritten_by_scalar",
+      "description": "A nested duplicate overwritten by a later scalar is accepted via last-write-wins",
+      "input": "[{\"a\": {\"nested\": 1}, \"a\": 2}]",
+      "expected_num_rows": 1,
+      "expected_num_cols": 1,
+      "expected_field_order": ["a"],
+      "expected_schema": {
+        "a": { "type": "int64" }
+      },
+      "expected_rows": [
+        {
+          "type": "object",
+          "value": {
+            "a": { "type": "int", "value": 2 }
+          }
+        }
+      ]
+    },
+    {
+      "id": "read_arrow_ttoon_tabular_header_order",
+      "description": "T-TOON tabular uses explicit header field order",
+      "input": "[1]{b,a}:\n1, 2",
+      "expected_num_rows": 1,
+      "expected_num_cols": 2,
+      "expected_field_order": ["b", "a"],
+      "expected_schema": {
+        "b": { "type": "int64" },
+        "a": { "type": "int64" }
+      },
+      "expected_rows": [
+        {
+          "type": "object",
+          "value": {
+            "b": { "type": "int", "value": 1 },
+            "a": { "type": "int", "value": 2 }
+          }
+        }
+      ]
+    },
+    {
+      "id": "read_arrow_error_not_list",
+      "description": "Non-list input -> ArrowError",
+      "input": "{\"key\": 1}",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_non_object_rows",
+      "description": "List containing non-objects -> ArrowError",
+      "input": "[1, 2, 3]",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_nested_value",
+      "description": "Row with nested object value -> ArrowError (non-scalar field)",
+      "input": "[{\"a\": {\"nested\": 1}}]",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_duplicate_scalar_overwritten_by_nested",
+      "description": "Duplicate key whose final value is nested is rejected",
+      "input": "[{\"a\": 1, \"a\": {\"nested\": 2}}]",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_empty_list",
+      "description": "Empty list -> ArrowError (cannot infer schema)",
+      "input": "[]",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_datetime_timezone_mix",
+      "description": "Mixing timezone-aware and naive datetime in one column is rejected",
+      "input": "[{\"ts\": 2026-02-27T10:30:00Z}, {\"ts\": 2026-02-27T10:30:00}]",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_ttoon_structure_sparse_requires_header",
+      "description": "T-TOON structure rows do not infer sparse schema; use tabular header instead",
+      "input": "- a: 1\n- b: 2",
+      "expected": {
+        "error": "arrow_error"
+      }
+    },
+    {
+      "id": "read_arrow_error_ttoon_tabular_short_row",
+      "description": "T-TOON tabular row width must match header width",
+      "input": "[2]{a,b}:\n1, 2\n3",
+      "expected": {
+        "error": "parse_error"
+      }
+    }
+  ]
+}

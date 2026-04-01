@@ -1,0 +1,17 @@
+[package]
+name = "ttoon-py-bridge"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+name = "_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.26", features = ["extension-module", "abi3-py311"] }
+pyo3-arrow = "0.14.0"
+arrow-array = "57"
+ttoon-core = { path = "../core" }
+indexmap = "2"

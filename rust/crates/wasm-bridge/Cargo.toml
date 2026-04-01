@@ -1,0 +1,18 @@
+[package]
+name = "ttoon-wasm-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "WASM bridge for @ttoon/shared — exposes ttoon-core batch and streaming APIs to JavaScript"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ttoon-core = { path = "../core" }
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+indexmap = "2"
+arrow-array = { version = "57", default-features = false }
+arrow-ipc = { version = "57", default-features = false }

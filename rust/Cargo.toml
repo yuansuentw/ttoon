@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/py-bridge",
+    "crates/wasm-bridge",
+]
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = "debuginfo"

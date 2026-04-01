@@ -1,0 +1,155 @@
+{
+  "description": "Validation error cases: values that parse but fail validation",
+  "tests": [
+    {
+      "id": "validate_date_month_13",
+      "description": "Month 13 is invalid",
+      "input": "[2024-13-01]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_month_00",
+      "description": "Month 00 is invalid",
+      "input": "[2024-00-01]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_day_00",
+      "description": "Day 00 is invalid",
+      "input": "[2024-01-00]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_day_32",
+      "description": "Day 32 is invalid",
+      "input": "[2024-01-32]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_non_leap_feb29",
+      "description": "Feb 29 in non-leap year is invalid",
+      "input": "[2023-02-29]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_feb_30",
+      "description": "Feb 30 is never valid",
+      "input": "[2024-02-30]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_date_apr_31",
+      "description": "April 31 is invalid",
+      "input": "[2024-04-31]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_time_hour_24",
+      "description": "Hour 24 is invalid",
+      "input": "[24:00:00]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_time_minute_60",
+      "description": "Minute 60 is invalid",
+      "input": "[23:60:00]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_time_second_60",
+      "description": "Second 60 is invalid",
+      "input": "[23:59:60]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_time_fractional_7_digits",
+      "description": "Time with 7 fractional digits is invalid",
+      "input": "[23:59:59.1234567]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_time_fractional_empty",
+      "description": "Time with empty fractional part is invalid",
+      "input": "[23:59:59.]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_datetime_tz_hour_24",
+      "description": "DateTime timezone hour 24 is invalid",
+      "input": "[2024-01-01T00:00:00+24:00]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_datetime_tz_minute_60",
+      "description": "DateTime timezone minute 60 is invalid",
+      "input": "[2024-01-01T00:00:00+00:60]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_datetime_tz_hour_25",
+      "description": "DateTime timezone hour 25 is invalid",
+      "input": "[2024-01-01T00:00:00+25:00]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_uuid_uppercase",
+      "description": "UUID must be lowercase",
+      "input": "[uuid(426AC144-7477-4A90-93DE-33F879C62D4D)]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_uuid_mixed_case",
+      "description": "UUID mixed case is invalid",
+      "input": "[uuid(426ac144-7477-4a90-93de-33f879c62d4D)]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_uuid_partial_uppercase",
+      "description": "UUID partial uppercase is invalid",
+      "input": "[uuid(426Ac144-7477-4a90-93de-33f879c62d4d)]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_uuid_missing_hyphen_positions",
+      "description": "UUID with misplaced hyphens is invalid",
+      "input": "[uuid(426ac1447477-4a90-93de-33f879c62d4d)]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_negative_zero",
+      "description": "Decimal -0m is invalid",
+      "input": "[-0m]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_negative_zero_dot",
+      "description": "Decimal -0.0m is invalid",
+      "input": "[-0.0m]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_negative_zero_00",
+      "description": "Decimal -0.00m is invalid",
+      "input": "[-0.00m]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_leading_zero",
+      "description": "Decimal with leading zero (01m) is invalid",
+      "input": "[01m]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_leading_zero_dot",
+      "description": "Decimal with leading zero (001.5m) is invalid",
+      "input": "[001.5m]",
+      "expected": {"error": "validate_error"}
+    },
+    {
+      "id": "validate_decimal_leading_zero_positive",
+      "description": "Decimal with leading zero (+01m) is invalid",
+      "input": "[+01m]",
+      "expected": {"error": "validate_error"}
+    }
+  ]
+}

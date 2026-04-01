@@ -1,0 +1,367 @@
+{
+  "description": "T-TOON Structure format (key: value) parsing",
+  "tests": [
+    {
+      "id": "ttoon_struct_simple_kv",
+      "description": "Simple key-value object",
+      "input": "name: Alice\nage: 30\nactive: true",
+      "expected": {
+        "type": "object",
+        "value": {
+          "name": {
+            "type": "string",
+            "value": "Alice"
+          },
+          "age": {
+            "type": "int",
+            "value": 30
+          },
+          "active": {
+            "type": "bool",
+            "value": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_bool_values",
+      "description": "Boolean values",
+      "input": "active: true\ndeleted: false\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "active": {
+            "type": "bool",
+            "value": true
+          },
+          "deleted": {
+            "type": "bool",
+            "value": false
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_null",
+      "description": "Null value",
+      "input": "value: null\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_float",
+      "description": "Float value",
+      "input": "pi: 3.14\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "pi": {
+            "type": "float",
+            "value": 3.14
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_decimal",
+      "description": "Decimal value with m suffix",
+      "input": "price: 99.99m\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "price": {
+            "type": "decimal",
+            "value": "99.99m"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_quoted_string",
+      "description": "Quoted string value",
+      "input": "msg: \"Hello, World!\"\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "msg": {
+            "type": "string",
+            "value": "Hello, World!"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_uuid",
+      "description": "UUID typed cell",
+      "input": "id: uuid(550e8400-e29b-41d4-a716-446655440000)\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "id": {
+            "type": "uuid",
+            "value": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_hex",
+      "description": "Hex typed cell",
+      "input": "data: hex(DEADBEEF)\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "data": {
+            "type": "binary_hex",
+            "value": "DEADBEEF"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_date",
+      "description": "Date value (unquoted)",
+      "input": "birthday: 1990-01-15\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "birthday": {
+            "type": "date",
+            "value": "1990-01-15"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_time",
+      "description": "Time value (unquoted, colon: safe)",
+      "input": "alarm: 07:30:00\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "alarm": {
+            "type": "time",
+            "value": "07:30:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_datetime",
+      "description": "DateTime value (unquoted)",
+      "input": "ts: 2026-02-27T10:30:00Z\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "ts": {
+            "type": "datetime",
+            "value": "2026-02-27T10:30:00Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_nested_object",
+      "description": "Nested object with indentation",
+      "input": "user:\n  name: Bob\n  age: 25",
+      "expected": {
+        "type": "object",
+        "value": {
+          "user": {
+            "type": "object",
+            "value": {
+              "name": {
+                "type": "string",
+                "value": "Bob"
+              },
+              "age": {
+                "type": "int",
+                "value": 25
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_inline_array",
+      "description": "Inline array with [N]: syntax",
+      "input": "tags[3]: web, api, rust",
+      "expected": {
+        "type": "object",
+        "value": {
+          "tags": {
+            "type": "list",
+            "value": [
+              {
+                "type": "string",
+                "value": "web"
+              },
+              {
+                "type": "string",
+                "value": "api"
+              },
+              {
+                "type": "string",
+                "value": "rust"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_inline_array_quoted_delimiter",
+      "description": "Nested inline array preserves delimiter inside quoted string",
+      "input": "items[2]: \"a, b\", \"c\"",
+      "expected": {
+        "type": "object",
+        "value": {
+          "items": {
+            "type": "list",
+            "value": [
+              {
+                "type": "string",
+                "value": "a, b"
+              },
+              {
+                "type": "string",
+                "value": "c"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_expanded_list",
+      "description": "Expanded list with - item format (requires direct parser call, not auto-detect)",
+      "input": "items[2]:\n  - hello\n  - world\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "items": {
+            "type": "list",
+            "value": [
+              {
+                "type": "string",
+                "value": "hello"
+              },
+              {
+                "type": "string",
+                "value": "world"
+              }
+            ]
+          }
+        }
+      },
+      "parser": "ttoon"
+    },
+    {
+      "id": "ttoon_struct_typed_cells_uuid_hex",
+      "description": "Object with UUID and hex typed cells",
+      "input": "id: uuid(550e8400-e29b-41d4-a716-446655440000)\ndata: hex(0a1b2c)",
+      "expected": {
+        "type": "object",
+        "value": {
+          "id": {
+            "type": "uuid",
+            "value": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "data": {
+            "type": "binary_hex",
+            "value": "0a1b2c"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_time_datetime_unquoted",
+      "description": "Time and datetime values are unquoted",
+      "input": "start: 14:30:00\ncreated: 2026-01-20T14:30:00Z",
+      "expected": {
+        "type": "object",
+        "value": {
+          "start": {
+            "type": "time",
+            "value": "14:30:00"
+          },
+          "created": {
+            "type": "datetime",
+            "value": "2026-01-20T14:30:00Z"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_special_floats",
+      "description": "Special float values in T-TOON structure",
+      "input": "a: inf\nb: -inf\nc: nan\n",
+      "expected": {
+        "type": "object",
+        "value": {
+          "a": {
+            "type": "float",
+            "value": "+Infinity"
+          },
+          "b": {
+            "type": "float",
+            "value": "-Infinity"
+          },
+          "c": {
+            "type": "float",
+            "value": "NaN"
+          }
+        }
+      }
+    },
+    {
+      "id": "ttoon_struct_empty",
+      "description": "Empty string returns empty object (requires direct parser call)",
+      "input": "",
+      "expected": {
+        "type": "object",
+        "value": {}
+      },
+      "parser": "ttoon"
+    },
+    {
+      "id": "ttoon_escape_backspace_invalid",
+      "description": "T-TOON string: \\b (backspace) must be rejected",
+      "input": "key: \"hello\\bworld\"",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "ttoon_escape_formfeed_invalid",
+      "description": "T-TOON string: \\f (form feed) must be rejected",
+      "input": "key: \"hello\\fworld\"",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "ttoon_escape_unicode_invalid",
+      "description": "T-TOON string: \\uXXXX must be rejected",
+      "input": "key: \"hello\\u0041\"",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "ttoon_escape_slash_invalid",
+      "description": "T-TOON string: \\/ must be rejected",
+      "input": "key: \"path\\/file\"",
+      "expected": {
+        "error": "parse_error"
+      }
+    }
+  ]
+}

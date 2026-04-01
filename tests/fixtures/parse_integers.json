@@ -1,0 +1,305 @@
+{
+  "description": "Integer parsing edge cases",
+  "tests": [
+    {
+      "id": "int_basic_values",
+      "description": "Basic integer values: 1, 1_000, +12, -12",
+      "input": "[1, 1_000, +12, -12]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "value": 1000
+          },
+          {
+            "type": "int",
+            "value": 12
+          },
+          {
+            "type": "int",
+            "value": -12
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_leading_zero_01",
+      "description": "Leading zero 01 is invalid",
+      "input": "[01]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_leading_zero_001",
+      "description": "Leading zero 001 is invalid",
+      "input": "[001]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_leading_zero_0123",
+      "description": "Leading zero 0123 is invalid",
+      "input": "[0123]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_leading_zero_positive",
+      "description": "Leading zero +01 is invalid",
+      "input": "[+01]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_leading_zero_negative",
+      "description": "Leading zero -01 is invalid",
+      "input": "[-01]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_invalid_grouping_2digits",
+      "description": "Grouping with 2 digits (12_34) is invalid",
+      "input": "[12_34]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_1_000",
+      "description": "Valid thousands separator: 1_000",
+      "input": "[1_000]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_12_345",
+      "description": "Valid thousands separator: 12_345",
+      "input": "[12_345]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 12345
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_123_456_789",
+      "description": "Valid thousands separator: 123_456_789",
+      "input": "[123_456_789]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 123456789
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_1_234_567_890",
+      "description": "Valid thousands separator: 1_234_567_890",
+      "input": "[1_234_567_890]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1234567890
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_positive",
+      "description": "Valid thousands separator with positive sign",
+      "input": "[+1_000]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_negative",
+      "description": "Valid thousands separator with negative sign",
+      "input": "[-1_000]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": -1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_thousands_invalid_2digit_group",
+      "description": "Invalid grouping: 1_2 (not 3 digits)",
+      "input": "[1_2]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_2digit_group_100",
+      "description": "Invalid grouping: 1_00 (not 3 digits)",
+      "input": "[1_00]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_double_underscore",
+      "description": "Invalid: consecutive underscores",
+      "input": "[1__000]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_leading_underscore",
+      "description": "Invalid: leading underscore",
+      "input": "[_1000]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_trailing_underscore",
+      "description": "Invalid: trailing underscore",
+      "input": "[1000_]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_second_group_not_3",
+      "description": "Invalid grouping: 12_34 (second group not 3 digits)",
+      "input": "[12_34]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_thousands_invalid_first_group_too_large",
+      "description": "Invalid grouping: 1234_567 (first group > 3 digits)",
+      "input": "[1234_567]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_zero",
+      "description": "Zero is valid",
+      "input": "[0]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_positive_zero",
+      "description": "Positive zero is valid",
+      "input": "[+0]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "int_negative_zero_invalid",
+      "description": "Negative zero -0 is invalid",
+      "input": "[-0]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_i64_max",
+      "description": "i64 MAX value",
+      "input": "[9223372036854775807]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": "9223372036854775807"
+          }
+        ]
+      },
+      "skip": [
+        "js"
+      ]
+    },
+    {
+      "id": "int_i64_min",
+      "description": "i64 MIN value",
+      "input": "[-9223372036854775808]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": "-9223372036854775808"
+          }
+        ]
+      },
+      "skip": [
+        "js"
+      ]
+    },
+    {
+      "id": "int_overflow",
+      "description": "Integer overflow should fail",
+      "input": "[9223372036854775808]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "int_huge_number",
+      "description": "Very large integer should fail",
+      "input": "[99999999999999999999999999999999999999]",
+      "expected": {
+        "error": "parse_error"
+      }
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ttoon.dev/schemas/benchmark-dataset-meta.schema.json",
+  "title": "Benchmark Prepared Dataset Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "variant",
+    "size",
+    "row_count",
+    "schema_summary",
+    "source_provenance",
+    "generator_version",
+    "prepared_at",
+    "available_benchmark_targets"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "variant": {
+      "type": "string",
+      "enum": [
+        "js-basic",
+        "extended"
+      ]
+    },
+    "size": {
+      "type": "string",
+      "enum": [
+        "10k",
+        "100k",
+        "1m"
+      ]
+    },
+    "row_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "schema_summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "shape",
+        "fields"
+      ],
+      "properties": {
+        "shape": {
+          "type": "string",
+          "enum": [
+            "structure+tabular"
+          ]
+        },
+        "object_layout": {
+          "type": "string",
+          "enum": [
+            "column-oriented-nested-object-v1"
+          ]
+        },
+        "object_source_encoding": {
+          "type": "string",
+          "enum": [
+            "plain-json-v1",
+            "typed-envelope-v1"
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "kind"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1
+              },
+              "nullable": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "object_root_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "typed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "table_field_order": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source_provenance": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "strategy",
+        "details"
+      ],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "authoritative",
+            "generated"
+          ]
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "generator_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prepared_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "available_benchmark_targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "structure",
+        "tabular"
+      ],
+      "properties": {
+        "structure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_json",
+            "tjson",
+            "ttoon",
+            "toon"
+          ],
+          "properties": {
+            "source_json": {
+              "type": "boolean"
+            },
+            "tjson": {
+              "type": "boolean"
+            },
+            "ttoon": {
+              "type": "boolean"
+            },
+            "toon": {
+              "type": "boolean"
+            }
+          }
+        },
+        "tabular": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_arrow",
+            "tjson",
+            "ttoon"
+          ],
+          "properties": {
+            "source_arrow": {
+              "type": "boolean"
+            },
+            "tjson": {
+              "type": "boolean"
+            },
+            "ttoon": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "expansion": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

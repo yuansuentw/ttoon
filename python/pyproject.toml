@@ -1,0 +1,45 @@
+[project]
+name = "ttoon"
+version = "0.1.0"
+license = "MIT"
+description = "TTOON — cross-language typed text data exchange for T-TOON and T-JSON with Arrow support"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["ttoon", "t-json", "toon-format", "serialization", "arrow"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Rust",
+    "Topic :: Database",
+    "Topic :: File Formats",
+    "Typing :: Typed",
+]
+dependencies = [
+    "polars>=1.37.1",
+    "pyarrow>=23.0.0",
+]
+
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module", "pyo3/abi3-py311"]
+module-name = "ttoon._core"
+python-source = "."
+manifest-path = "../rust/crates/py-bridge/Cargo.toml"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

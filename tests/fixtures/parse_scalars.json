@@ -1,0 +1,268 @@
+{
+  "description": "Scalar value parsing: null, bool, keywords",
+  "tests": [
+    {
+      "id": "scalar_null_true_false",
+      "description": "Parse null, true, false in a list",
+      "input": "[null, true, false]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "bool",
+            "value": true
+          },
+          {
+            "type": "bool",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "keyword_null_lowercase",
+      "description": "null keyword must be lowercase",
+      "input": "[null]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    {
+      "id": "keyword_true_lowercase",
+      "description": "true keyword must be lowercase",
+      "input": "[true]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "bool",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "keyword_false_lowercase",
+      "description": "false keyword must be lowercase",
+      "input": "[false]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "bool",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "keyword_Null_invalid",
+      "description": "Null (capitalized) is not a valid keyword",
+      "input": "[Null]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_NULL_invalid",
+      "description": "NULL (uppercase) is not a valid keyword",
+      "input": "[NULL]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_True_invalid",
+      "description": "True (capitalized) is not a valid keyword",
+      "input": "[True]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_TRUE_invalid",
+      "description": "TRUE (uppercase) is not a valid keyword",
+      "input": "[TRUE]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_False_invalid",
+      "description": "False (capitalized) is not a valid keyword",
+      "input": "[False]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_FALSE_invalid",
+      "description": "FALSE (uppercase) is not a valid keyword",
+      "input": "[FALSE]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_None_invalid",
+      "description": "None (Python-style) is not a valid keyword",
+      "input": "[None]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_undefined_invalid",
+      "description": "undefined (JS-style) is not a valid keyword",
+      "input": "[undefined]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "keyword_nil_invalid",
+      "description": "nil (Ruby/Go-style) is not a valid keyword",
+      "input": "[nil]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "scalar_null_true_false_serialize",
+      "description": "Serialize null, true, false produces canonical output",
+      "input": "[null, true, false]",
+      "expected_output": "[null, true, false]"
+    },
+    {
+      "id": "toplevel_int",
+      "description": "Top-level bare integer parsed via parse_value (R08)",
+      "input": "42",
+      "expected": {
+        "type": "int",
+        "value": 42
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_bool_true",
+      "description": "Top-level bare bool true parsed via parse_value (R08)",
+      "input": "true",
+      "expected": {
+        "type": "bool",
+        "value": true
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_bool_false",
+      "description": "Top-level bare bool false parsed via parse_value (R08)",
+      "input": "false",
+      "expected": {
+        "type": "bool",
+        "value": false
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_null",
+      "description": "Top-level bare null parsed via parse_value (R08)",
+      "input": "null",
+      "expected": {
+        "type": "null"
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_string",
+      "description": "Top-level quoted string parsed via parse_value (R08)",
+      "input": "\"hello\"",
+      "expected": {
+        "type": "string",
+        "value": "hello"
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_string_single_space",
+      "description": "Top-level quoted single-space string parsed via parse_value (R08)",
+      "input": "\" \"",
+      "expected": {
+        "type": "string",
+        "value": " "
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_string_multiple_spaces",
+      "description": "Top-level quoted multiple-spaces string parsed via parse_value (R08)",
+      "input": "\"   \"",
+      "expected": {
+        "type": "string",
+        "value": "   "
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_string_newline_only",
+      "description": "Top-level quoted newline-only string parsed via parse_value (R08)",
+      "input": "\"\\n\"",
+      "expected": {
+        "type": "string",
+        "value": "\n"
+      },
+      "direct_parser": "parse_value"
+    },
+    {
+      "id": "toplevel_bare_at_compat",
+      "description": "Top-level bare token @ falls back to string in compat mode",
+      "input": "@",
+      "expected": {
+        "type": "string",
+        "value": "@"
+      },
+      "direct_parser": "parse_value",
+      "mode": "compat"
+    },
+    {
+      "id": "toplevel_bare_hash_compat",
+      "description": "Top-level bare token # falls back to string in compat mode",
+      "input": "#",
+      "expected": {
+        "type": "string",
+        "value": "#"
+      },
+      "direct_parser": "parse_value",
+      "mode": "compat"
+    },
+    {
+      "id": "toplevel_bare_dollar_compat",
+      "description": "Top-level bare token $ falls back to string in compat mode",
+      "input": "$",
+      "expected": {
+        "type": "string",
+        "value": "$"
+      },
+      "direct_parser": "parse_value",
+      "mode": "compat"
+    },
+    {
+      "id": "toplevel_bare_backtick_compat",
+      "description": "Top-level bare token ` falls back to string in compat mode",
+      "input": "`",
+      "expected": {
+        "type": "string",
+        "value": "`"
+      },
+      "direct_parser": "parse_value",
+      "mode": "compat"
+    }
+  ]
+}

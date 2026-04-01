@@ -1,0 +1,183 @@
+{
+  "description": "Typed cell parsing: UUID, hex, base64, decimal",
+  "tests": [
+    {
+      "id": "uuid_typed_syntax",
+      "description": "UUID typed cell uses unified uuid(...) syntax",
+      "input": "[uuid(426ac144-7477-4a90-93de-33f879c62d4d)]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "uuid",
+            "value": "426ac144-7477-4a90-93de-33f879c62d4d"
+          }
+        ]
+      }
+    },
+    {
+      "id": "uuid_wrong_length_error",
+      "description": "UUID with wrong length should fail",
+      "input": "[uuid(short)]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "uuid_legacy_syntax_rejected",
+      "description": "Legacy uuid\"...\" syntax must be rejected",
+      "input": "[uuid\"426ac144-7477-4a90-93de-33f879c62d4d\"]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "hex_typed_syntax",
+      "description": "Hex typed cell uses unified hex(...) syntax",
+      "input": "[hex(0a1b2c)]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "binary_hex",
+            "value": "0a1b2c"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hex_odd_length_invalid",
+      "description": "Hex with odd length is invalid",
+      "input": "[hex(ABC)]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "hex_invalid_char_G",
+      "description": "Hex with invalid char G is invalid",
+      "input": "[hex(0G)]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "hex_invalid_char_XY",
+      "description": "Hex with invalid chars XY is invalid",
+      "input": "[hex(XY)]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "hex_legacy_syntax_rejected",
+      "description": "Legacy x\"...\" syntax must be rejected",
+      "input": "[x\"0A1B\"]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "b64_typed_syntax",
+      "description": "Base64 typed cell uses unified b64(...) syntax",
+      "input": "[b64(YWJj)]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "binary_b64",
+            "value": "YWJj"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b64_typed_invalid",
+      "description": "Base64 typed cell with invalid content should fail",
+      "input": "[b64(!!invalid!!)]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "b64_legacy_syntax_rejected",
+      "description": "Legacy b64\"...\" syntax must be rejected",
+      "input": "[b64\"YQ==\"]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "binary_short_keyword_rejected",
+      "description": "Legacy b\"...\" short binary syntax must be rejected",
+      "input": "[b\"hi\"]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "decimal_basic",
+      "description": "Basic decimal values",
+      "input": "[0m, +0.0m, 1.25m]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "decimal",
+            "value": "0m"
+          },
+          {
+            "type": "decimal",
+            "value": "+0.0m"
+          },
+          {
+            "type": "decimal",
+            "value": "1.25m"
+          }
+        ]
+      }
+    },
+    {
+      "id": "decimal_valid_formats",
+      "description": "All valid decimal formats",
+      "input": "[0m, +0m, 0.0m, +0.0m, 123m, 123.456m, +123.456m, -123.456m]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "decimal",
+            "value": "0m"
+          },
+          {
+            "type": "decimal",
+            "value": "+0m"
+          },
+          {
+            "type": "decimal",
+            "value": "0.0m"
+          },
+          {
+            "type": "decimal",
+            "value": "+0.0m"
+          },
+          {
+            "type": "decimal",
+            "value": "123m"
+          },
+          {
+            "type": "decimal",
+            "value": "123.456m"
+          },
+          {
+            "type": "decimal",
+            "value": "+123.456m"
+          },
+          {
+            "type": "decimal",
+            "value": "-123.456m"
+          }
+        ]
+      }
+    }
+  ]
+}

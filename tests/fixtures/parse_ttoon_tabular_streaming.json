@@ -1,0 +1,52 @@
+{
+  "description": "T-TOON Tabular streaming [*] parsing — deserialization contract",
+  "tests": [
+    {
+      "id": "ttoon_tabular_streaming_basic",
+      "description": "Streaming tabular header [*]{fields}: parses as list of objects",
+      "input": "[*]{name,score}:\nAlice, 95\nBob, 87\n",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "score": {"type": "int", "value": 95}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "score": {"type": "int", "value": 87}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ttoon_tabular_streaming_immediate_eof_error",
+      "description": "Streaming tabular header [*]{fields}: requires at least one row",
+      "input": "[*]{name,score}:\n",
+      "expected": {"error": "parse_error"}
+    },
+    {
+      "id": "ttoon_tabular_streaming_single_row",
+      "description": "Streaming tabular header [*]{fields}: with minimum one row",
+      "input": "[*]{name,score}:\nAlice, 95\n",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "score": {"type": "int", "value": 95}
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

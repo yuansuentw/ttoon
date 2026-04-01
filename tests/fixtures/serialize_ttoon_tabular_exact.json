@@ -1,0 +1,154 @@
+{
+  "description": "T-TOON Tabular exact-count [N] serialization contract",
+  "tests": [
+    {
+      "id": "serialize_ttoon_tabular",
+      "description": "T-TOON tabular serialization produces [N] header",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "age": {"type": "int", "value": 30},
+              "name": {"type": "string", "value": "Alice"}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "age": {"type": "int", "value": 25},
+              "name": {"type": "string", "value": "Bob"}
+            }
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_starts_with": "[2]"
+    },
+    {
+      "id": "serialize_root_list_tabular_detection",
+      "description": "Root-level uniform list of objects serializes as tabular format (R10)",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "age": {"type": "int", "value": 30}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "age": {"type": "int", "value": 25}
+            }
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_starts_with": "[2]{"
+    },
+    {
+      "id": "serialize_empty_objects_not_tabular",
+      "description": "List of empty objects does NOT produce tabular output (no fields)",
+      "value": {
+        "type": "list",
+        "value": [
+          {"type": "object", "value": {}},
+          {"type": "object", "value": {}}
+        ]
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_starts_with": "-"
+    },
+    {
+      "id": "serialize_root_scalar_list_inline",
+      "description": "Root scalar list serializes as inline array [N]: v1, v2, ...",
+      "value": {
+        "type": "list",
+        "value": [
+          {"type": "int", "value": 1},
+          {"type": "int", "value": 2},
+          {"type": "int", "value": 3}
+        ]
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output": "[3]: 1, 2, 3"
+    },
+    {
+      "id": "serialize_tabular_pipe_delimiter",
+      "description": "Tabular with pipe delimiter: header uses [N|]{f1|f2}, rows use | separator",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "age": {"type": "int", "value": 30}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "age": {"type": "int", "value": 25}
+            }
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon",
+        "delimiter": "|"
+      },
+      "expected_output_contains": [
+        "[2|]{name|age}:",
+        "\"Alice\"|30",
+        "\"Bob\"|25"
+      ]
+    },
+    {
+      "id": "serialize_tabular_tab_delimiter",
+      "description": "Tabular with tab delimiter: bracket uses real HTAB, fields and rows use tab separator",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "age": {"type": "int", "value": 30}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "age": {"type": "int", "value": 25}
+            }
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon",
+        "delimiter": "\t"
+      },
+      "expected_output_contains": [
+        "[2\t]{name\tage}:",
+        "\"Alice\"\t30",
+        "\"Bob\"\t25"
+      ]
+    }
+  ]
+}

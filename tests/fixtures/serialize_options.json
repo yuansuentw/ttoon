@@ -1,0 +1,265 @@
+{
+  "description": "Serializer option tests: format-specific and option-dependent output",
+  "tests": [
+    {
+      "id": "serialize_binary_format_invalid",
+      "description": "Invalid binary format should error",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "binary_hex",
+            "value": "61"
+          }
+        ]
+      },
+      "options": {
+        "binary_format": "unknown"
+      },
+      "expected": {
+        "error": "serialize_error"
+      }
+    },
+    {
+      "id": "serialize_float_always_decimal",
+      "description": "Float serialization always includes .0",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 2
+          }
+        ]
+      },
+      "expected_output": "[2.0]"
+    },
+    {
+      "id": "serialize_string_with_newline",
+      "description": "String with newline is escaped",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "string",
+            "value": "a\nb"
+          }
+        ]
+      },
+      "expected_output": "[\"a\\nb\"]"
+    },
+    {
+      "id": "serialize_ttoon_backspace_control_invalid",
+      "description": "T-TOON serializer rejects backspace control character",
+      "value": {
+        "type": "string",
+        "value": "a\b"
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected": {
+        "error": "serialize_error"
+      }
+    },
+    {
+      "id": "serialize_ttoon_formfeed_control_invalid",
+      "description": "T-TOON serializer rejects formfeed control character",
+      "value": {
+        "type": "string",
+        "value": "a\f"
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected": {
+        "error": "serialize_error"
+      }
+    },
+    {
+      "id": "serialize_ttoon_uuid_syntax",
+      "description": "T-TOON format uses uuid() syntax",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "uuid",
+            "value": "426ac144-7477-4a90-93de-33f879c62d4d"
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_contains": [
+        "uuid(426ac144-7477-4a90-93de-33f879c62d4d)"
+      ],
+      "expected_output_not_contains": [
+        "uuid\""
+      ]
+    },
+    {
+      "id": "serialize_ttoon_hex_syntax",
+      "description": "T-TOON format uses hex() syntax",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "binary_hex",
+            "value": "0A1B"
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon",
+        "binary_format": "hex"
+      },
+      "expected_output_contains": [
+        "hex(0a1b)"
+      ],
+      "expected_output_not_contains": [
+        "x\""
+      ]
+    },
+    {
+      "id": "serialize_ttoon_b64_syntax",
+      "description": "T-TOON format uses b64() syntax",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "binary_hex",
+            "value": "616263"
+          }
+        ]
+      },
+      "options": {
+        "format": "ttoon",
+        "binary_format": "b64"
+      },
+      "expected_output_contains": [
+        "b64(YWJj)"
+      ],
+      "expected_output_not_contains": [
+        "b64\""
+      ]
+    },
+    {
+      "id": "serialize_ttoon_structure_simple",
+      "description": "T-TOON structure serialization of simple object",
+      "value": {
+        "type": "object",
+        "value": {
+          "age": {
+            "type": "int",
+            "value": 30
+          },
+          "name": {
+            "type": "string",
+            "value": "Alice"
+          }
+        }
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_contains": [
+        "age: 30",
+        "name: \"Alice\""
+      ]
+    },
+    {
+      "id": "serialize_ttoon_structure_inline_array",
+      "description": "T-TOON structure serialization of inline array",
+      "value": {
+        "type": "object",
+        "value": {
+          "tags": {
+            "type": "list",
+            "value": [
+              {
+                "type": "string",
+                "value": "web"
+              },
+              {
+                "type": "string",
+                "value": "api"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "format": "ttoon"
+      },
+      "expected_output_contains": [
+        "tags[2]: \"web\", \"api\""
+      ]
+    },
+    {
+      "id": "serialize_string_quoted_ambiguous",
+      "description": "String values that look like other types are always quoted (R04)",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "string",
+            "value": "true"
+          },
+          {
+            "type": "string",
+            "value": "3.14"
+          },
+          {
+            "type": "string",
+            "value": "2026-03-01"
+          }
+        ]
+      },
+      "options": {
+        "format": "tjson"
+      },
+      "expected_output": "[\"true\", \"3.14\", \"2026-03-01\"]"
+    },
+    {
+      "id": "serialize_indent_size_4",
+      "description": "T-TOON structure with indent_size=4: list items inside object indented by 4 spaces",
+      "value": {
+        "type": "object",
+        "value": {
+          "items": {
+            "type": "list",
+            "value": [
+              {
+                "type": "object",
+                "value": {
+                  "x": {
+                    "type": "int",
+                    "value": 1
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "value": {
+                  "y": {
+                    "type": "int",
+                    "value": 2
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "format": "ttoon",
+        "indent_size": 4
+      },
+      "expected_output_contains": [
+        "    - x:",
+        "    - y:"
+      ]
+    }
+  ]
+}

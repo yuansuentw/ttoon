@@ -1,0 +1,178 @@
+{
+  "description": "Lexer error cases: unterminated strings, invalid escapes, invalid characters",
+  "tests": [
+    {
+      "id": "lex_unterminated_string_list",
+      "description": "Unterminated string in list",
+      "input": "[\"hello",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unterminated_string_escape",
+      "description": "Unterminated string ending with escape",
+      "input": "[\"hello\\",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unterminated_string_object",
+      "description": "Unterminated string in object",
+      "input": "{\"key\": \"value",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_invalid_escape_x",
+      "description": "Invalid escape sequence \\x",
+      "input": "[\"\\x\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_invalid_escape_v",
+      "description": "Invalid escape sequence \\v",
+      "input": "[\"\\v\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_invalid_escape_a",
+      "description": "Invalid escape sequence \\a",
+      "input": "[\"\\a\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unicode_too_short_3",
+      "description": "Unicode escape with only 3 digits",
+      "input": "[\"\\u123\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unicode_too_short_2",
+      "description": "Unicode escape with only 2 digits",
+      "input": "[\"\\u12\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unicode_no_digits",
+      "description": "Unicode escape with no digits",
+      "input": "[\"\\u\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unicode_invalid_digits",
+      "description": "Unicode escape with invalid hex digits",
+      "input": "[\"\\uGGGG\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unexpected_at",
+      "description": "Unexpected character @ in strict mode",
+      "input": "@",
+      "expected": {
+        "error": "lex_error"
+      },
+      "mode": "strict"
+    },
+    {
+      "id": "lex_unexpected_hash",
+      "description": "Unexpected character # in strict mode",
+      "input": "#",
+      "expected": {
+        "error": "lex_error"
+      },
+      "mode": "strict"
+    },
+    {
+      "id": "lex_unexpected_dollar",
+      "description": "Unexpected character $ in strict mode",
+      "input": "$",
+      "expected": {
+        "error": "lex_error"
+      },
+      "mode": "strict"
+    },
+    {
+      "id": "lex_unexpected_backtick",
+      "description": "Unexpected character ` in strict mode",
+      "input": "`",
+      "expected": {
+        "error": "lex_error"
+      },
+      "mode": "strict"
+    },
+    {
+      "id": "lex_unexpected_at_in_list",
+      "description": "Unexpected character @ inside list",
+      "input": "[@]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_unexpected_hash_in_list",
+      "description": "Unexpected character # inside list",
+      "input": "[#]",
+      "expected": {
+        "error": "lex_error"
+      }
+    },
+    {
+      "id": "lex_isolated_high_surrogate",
+      "description": "Isolated high surrogate",
+      "input": "[\"\\uD83D\"]",
+      "expected": {
+        "error": "lex_error"
+      },
+      "skip": [
+        "js"
+      ]
+    },
+    {
+      "id": "lex_isolated_low_surrogate",
+      "description": "Isolated low surrogate",
+      "input": "[\"\\uDE00\"]",
+      "expected": {
+        "error": "lex_error"
+      },
+      "skip": [
+        "js"
+      ]
+    },
+    {
+      "id": "lex_two_high_surrogates",
+      "description": "Two high surrogates without low",
+      "input": "[\"\\uD83D\\uD83D\"]",
+      "expected": {
+        "error": "lex_error"
+      },
+      "skip": [
+        "js"
+      ]
+    },
+    {
+      "id": "lex_control_char_null",
+      "description": "Control character (null byte) in string",
+      "input": "[\"null\u0000byte\"]",
+      "expected": {
+        "error": "lex_error"
+      }
+    }
+  ]
+}

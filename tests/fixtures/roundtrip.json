@@ -1,0 +1,395 @@
+{
+  "description": "Roundtrip tests: value → serialize → parse → compare",
+  "tests": [
+    {
+      "id": "roundtrip_int_zero",
+      "description": "Integer zero roundtrip",
+      "value": {"type": "int", "value": 0},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_one",
+      "description": "Integer 1 roundtrip",
+      "value": {"type": "int", "value": 1},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_negative",
+      "description": "Negative integer roundtrip",
+      "value": {"type": "int", "value": -1},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_positive",
+      "description": "Positive integer roundtrip",
+      "value": {"type": "int", "value": 123},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_negative_large",
+      "description": "Large negative integer roundtrip",
+      "value": {"type": "int", "value": -456},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_i64_max",
+      "description": "i64 MAX roundtrip",
+      "value": {"type": "int", "value": "9223372036854775807"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_2pow53_plus_1",
+      "description": "2^53 + 1 roundtrip",
+      "value": {"type": "int", "value": "9007199254740993"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_i64_min",
+      "description": "i64 MIN roundtrip",
+      "value": {"type": "int", "value": "-9223372036854775808"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_zero",
+      "description": "Float zero roundtrip",
+      "value": {"type": "float", "value": 0.0},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_one",
+      "description": "Float 1.0 roundtrip",
+      "value": {"type": "float", "value": 1.0},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_negative",
+      "description": "Float -1.0 roundtrip",
+      "value": {"type": "float", "value": -1.0},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_1_5",
+      "description": "Float 1.5 roundtrip",
+      "value": {"type": "float", "value": 1.5},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_infinity",
+      "description": "Float +Infinity roundtrip",
+      "value": {"type": "float", "value": "+Infinity"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_neg_infinity",
+      "description": "Float -Infinity roundtrip",
+      "value": {"type": "float", "value": "-Infinity"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_float_nan",
+      "description": "Float NaN roundtrip (special comparison)",
+      "value": {"type": "float", "value": "NaN"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_decimal_0m",
+      "description": "Decimal 0m roundtrip",
+      "value": {"type": "decimal", "value": "0m"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_decimal_1m",
+      "description": "Decimal 1m roundtrip",
+      "value": {"type": "decimal", "value": "1m"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_decimal_123_456m",
+      "description": "Decimal 123.456m roundtrip",
+      "value": {"type": "decimal", "value": "123.456m"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_decimal_positive",
+      "description": "Decimal +0m roundtrip",
+      "value": {"type": "decimal", "value": "+0m"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_decimal_positive_value",
+      "description": "Decimal +123.45m roundtrip",
+      "value": {"type": "decimal", "value": "+123.45m"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_empty",
+      "description": "Empty string roundtrip",
+      "value": {"type": "string", "value": ""},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_single_space",
+      "description": "Single space string roundtrip",
+      "value": {"type": "string", "value": " "},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_multiple_spaces",
+      "description": "Multiple spaces string roundtrip",
+      "value": {"type": "string", "value": "   "},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_newline_only",
+      "description": "Newline-only string roundtrip",
+      "value": {"type": "string", "value": "\n"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_hello",
+      "description": "Simple string roundtrip",
+      "value": {"type": "string", "value": "hello"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_with_space",
+      "description": "String with space roundtrip",
+      "value": {"type": "string", "value": "hello world"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_with_newline",
+      "description": "String with newline roundtrip",
+      "value": {"type": "string", "value": "hello\nworld"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_with_tab",
+      "description": "String with tab roundtrip",
+      "value": {"type": "string", "value": "tab\there"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_with_quote",
+      "description": "String with quote roundtrip",
+      "value": {"type": "string", "value": "quote\"inside"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_with_backslash",
+      "description": "String with backslash roundtrip",
+      "value": {"type": "string", "value": "backslash\\path"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_string_unicode",
+      "description": "String with Unicode roundtrip",
+      "value": {"type": "string", "value": "中文測試"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_binary_empty",
+      "description": "Empty binary roundtrip",
+      "value": {"type": "binary_hex", "value": ""},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_binary_empty_b64",
+      "description": "Empty binary roundtrip with b64 output",
+      "value": {"type": "binary_hex", "value": ""},
+      "format": "tjson",
+      "options": {
+        "binary_format": "b64"
+      }
+    },
+    {
+      "id": "roundtrip_binary_single_byte",
+      "description": "Single byte binary roundtrip",
+      "value": {"type": "binary_hex", "value": "00"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_binary_ff",
+      "description": "0xFF binary roundtrip",
+      "value": {"type": "binary_hex", "value": "FF"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_binary_multi",
+      "description": "Multi-byte binary roundtrip",
+      "value": {"type": "binary_hex", "value": "0A1B2C"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_date_basic",
+      "description": "Date roundtrip",
+      "value": {"type": "date", "value": "2024-01-01"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_date_end_of_year",
+      "description": "Date end of year roundtrip",
+      "value": {"type": "date", "value": "2024-12-31"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_time_midnight",
+      "description": "Time midnight roundtrip",
+      "value": {"type": "time", "value": "00:00:00"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_time_end_of_day",
+      "description": "Time end of day roundtrip",
+      "value": {"type": "time", "value": "23:59:59"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_time_fractional",
+      "description": "Time with fractional seconds roundtrip",
+      "value": {"type": "time", "value": "12:34:56.123456"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_datetime_utc",
+      "description": "DateTime UTC roundtrip",
+      "value": {"type": "datetime", "value": "2024-01-01T00:00:00Z"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_datetime_fractional",
+      "description": "DateTime with fractional seconds roundtrip",
+      "value": {"type": "datetime", "value": "2024-12-31T23:59:59.999999Z"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_datetime_offset",
+      "description": "DateTime with timezone offset roundtrip",
+      "value": {"type": "datetime", "value": "2024-06-15T12:30:00+08:00"},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_empty_list",
+      "description": "Empty list roundtrip",
+      "value": {"type": "list", "value": []},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_int_list",
+      "description": "Integer list roundtrip",
+      "value": {"type": "list", "value": [
+        {"type": "int", "value": 1},
+        {"type": "int", "value": 2},
+        {"type": "int", "value": 3}
+      ]},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_ttoon_single_item_root_list",
+      "description": "T-TOON single-item root list roundtrip",
+      "value": {"type": "list", "value": [
+        {"type": "int", "value": 1}
+      ]},
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_empty_object",
+      "description": "Empty object roundtrip",
+      "value": {"type": "object", "value": {}},
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_object_mixed",
+      "description": "Object with mixed values roundtrip",
+      "value": {
+        "type": "object",
+        "value": {
+          "a": {"type": "int", "value": 1},
+          "b": {"type": "string", "value": "test"}
+        }
+      },
+      "format": "tjson"
+    },
+    {
+      "id": "roundtrip_ttoon_structure_object",
+      "description": "T-TOON structure object roundtrip",
+      "value": {
+        "type": "object",
+        "value": {
+          "active": {"type": "bool", "value": true},
+          "age": {"type": "int", "value": 30},
+          "name": {"type": "string", "value": "Alice"}
+        }
+      },
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_ttoon_uuid",
+      "description": "T-TOON UUID roundtrip",
+      "value": {"type": "uuid", "value": "426ac144-7477-4a90-93de-33f879c62d4d"},
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_ttoon_binary_hex",
+      "description": "T-TOON binary hex roundtrip",
+      "value": {"type": "binary_hex", "value": "DEADBEEF"},
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_ttoon_binary_b64",
+      "description": "T-TOON binary b64 roundtrip",
+      "value": {"type": "binary_b64", "value": "AP+AQA=="},
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_ttoon_binary_empty_b64",
+      "description": "T-TOON empty binary b64 roundtrip",
+      "value": {"type": "binary_hex", "value": ""},
+      "format": "ttoon",
+      "options": {
+        "binary_format": "b64"
+      }
+    },
+    {
+      "id": "roundtrip_tabular_key_order",
+      "description": "Tabular list roundtrip: key order preserved as insertion order",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "z": {"type": "int", "value": 3},
+              "a": {"type": "string", "value": "first"}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "z": {"type": "int", "value": 7},
+              "a": {"type": "string", "value": "second"}
+            }
+          }
+        ]
+      },
+      "format": "ttoon"
+    },
+    {
+      "id": "roundtrip_tabular_quoted_delimiter",
+      "description": "Tabular roundtrip: comma inside quoted string is preserved (R05 split_row_quote_aware)",
+      "value": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Smith, John"},
+              "age": {"type": "int", "value": 40}
+            }
+          }
+        ]
+      },
+      "format": "ttoon"
+    }
+  ]
+}

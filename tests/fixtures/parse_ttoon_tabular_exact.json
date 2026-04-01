@@ -1,0 +1,166 @@
+{
+  "description": "T-TOON Tabular exact-count [N] parsing — deserialization contract",
+  "tests": [
+    {
+      "id": "ttoon_tabular_basic",
+      "description": "Basic tabular with 3 rows",
+      "input": "[3]{name,age,active}:\nAlice, 30, true\nBob, 25, false\nCarol, 28, true",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "age": {"type": "int", "value": 30},
+              "active": {"type": "bool", "value": true}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "age": {"type": "int", "value": 25},
+              "active": {"type": "bool", "value": false}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Carol"},
+              "age": {"type": "int", "value": 28},
+              "active": {"type": "bool", "value": true}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ttoon_tabular_with_null",
+      "description": "Tabular with null values",
+      "input": "[2]{id,score}:\n1, null\n2, 87.5",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "id": {"type": "int", "value": 1},
+              "score": {"type": "null"}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "id": {"type": "int", "value": 2},
+              "score": {"type": "float", "value": 87.5}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ttoon_tabular_2_fields",
+      "description": "Tabular with 2 fields and trailing newline",
+      "input": "[2]{name,score}:\nAlice, 95\nBob, 87\n",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"},
+              "score": {"type": "int", "value": 95}
+            }
+          },
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Bob"},
+              "score": {"type": "int", "value": 87}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ttoon_tabular_zero_count_empty",
+      "description": "Zero-count tabular header [0]{fields}: produces empty list",
+      "input": "[0]{name,score}:\n",
+      "expected": {
+        "type": "list",
+        "value": []
+      }
+    },
+    {
+      "id": "ttoon_tabular_zero_count_trailing_data_error",
+      "description": "Zero-count tabular header with trailing data rows is an error",
+      "input": "[0]{name,score}:\nAlice, 95\n",
+      "expected": {"error": "parse_error"}
+    },
+    {
+      "id": "ttoon_tabular_exact_count_one_row",
+      "description": "Exact count [1]{fields}: with exactly one row succeeds",
+      "input": "[1]{name}:\nAlice\n",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "name": {"type": "string", "value": "Alice"}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ttoon_tabular_exact_count_fewer_rows_error",
+      "description": "Exact count header with fewer rows than declared is an error",
+      "input": "[2]{name,score}:\nAlice, 95\n",
+      "expected": {"error": "parse_error"}
+    },
+    {
+      "id": "ttoon_tabular_exact_count_extra_rows_error",
+      "description": "Exact count header with more rows than declared is an error",
+      "input": "[2]{name,score}:\nAlice, 95\nBob, 87\nCarol, 92\n",
+      "expected": {"error": "parse_error"}
+    },
+    {
+      "id": "ttoon_tabular_field_mismatch_error",
+      "description": "Row field count mismatch is an error",
+      "input": "[2]{name,age}:\nAlice\nBob, 25\n",
+      "expected": {"error": "parse_error"}
+    },
+    {
+      "id": "ttoon_tabular_embedded_in_structure",
+      "description": "Tabular embedded in T-TOON structure (requires direct parser call)",
+      "input": "users[2]{name,age}:\n  Alice, 30\n  Bob, 25\n",
+      "parser": "ttoon",
+      "expected": {
+        "type": "object",
+        "value": {
+          "users": {
+            "type": "list",
+            "value": [
+              {
+                "type": "object",
+                "value": {
+                  "name": {"type": "string", "value": "Alice"},
+                  "age": {"type": "int", "value": 30}
+                }
+              },
+              {
+                "type": "object",
+                "value": {
+                  "name": {"type": "string", "value": "Bob"},
+                  "age": {"type": "int", "value": 25}
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

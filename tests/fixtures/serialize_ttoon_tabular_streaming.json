@@ -1,0 +1,56 @@
+{
+  "description": "T-TOON Tabular streaming [*] serialization contract — streaming writer output verification",
+  "tests": [
+    {
+      "id": "streaming_serialize_basic",
+      "description": "Streaming writer outputs [*]{fields}: header with data rows",
+      "fields": ["name", "age"],
+      "rows": [
+        {
+          "name": {"type": "string", "value": "Alice"},
+          "age": {"type": "int", "value": 30}
+        },
+        {
+          "name": {"type": "string", "value": "Bob"},
+          "age": {"type": "int", "value": 25}
+        }
+      ],
+      "expected_output": "[*]{name,age}:\n\"Alice\", 30\n\"Bob\", 25\n"
+    },
+    {
+      "id": "streaming_serialize_single_row",
+      "description": "Streaming writer with one row still uses [*] header",
+      "fields": ["name", "age"],
+      "rows": [
+        {
+          "name": {"type": "string", "value": "Alice"},
+          "age": {"type": "int", "value": 30}
+        }
+      ],
+      "expected_output": "[*]{name,age}:\n\"Alice\", 30\n"
+    },
+    {
+      "id": "streaming_serialize_empty_produces_exact_zero",
+      "description": "Streaming writer with 0 rows outputs [0]{fields}: (exact-count empty, not [*])",
+      "fields": ["name", "age"],
+      "rows": [],
+      "expected_output": "[0]{name,age}:\n"
+    },
+    {
+      "id": "streaming_serialize_with_null",
+      "description": "Streaming writer correctly serializes null values in rows",
+      "fields": ["name", "age"],
+      "rows": [
+        {
+          "name": {"type": "string", "value": "Alice"},
+          "age": {"type": "int", "value": 1}
+        },
+        {
+          "name": {"type": "string", "value": "Bob"},
+          "age": {"type": "null"}
+        }
+      ],
+      "expected_output": "[*]{name,age}:\n\"Alice\", 1\n\"Bob\", null\n"
+    }
+  ]
+}

@@ -1,0 +1,405 @@
+{
+  "description": "Structure parsing: lists, objects, nesting, whitespace",
+  "tests": [
+    {
+      "id": "struct_empty_list",
+      "description": "Empty list",
+      "input": "[]",
+      "expected": {
+        "type": "list",
+        "value": []
+      }
+    },
+    {
+      "id": "struct_empty_object",
+      "description": "Empty object",
+      "input": "{}",
+      "expected": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    {
+      "id": "struct_nested_empty_list",
+      "description": "Nested empty list: [[]]",
+      "input": "[[]]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "list",
+            "value": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "struct_object_with_empty_list",
+      "description": "Object containing empty list",
+      "input": "{\"a\": []}",
+      "expected": {
+        "type": "object",
+        "value": {
+          "a": {
+            "type": "list",
+            "value": []
+          }
+        }
+      }
+    },
+    {
+      "id": "struct_mixed_types_list",
+      "description": "List with mixed types",
+      "input": "[1, 1.5, \"text\", true, null, [1, 2], {\"a\": 1}]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "float",
+            "value": 1.5
+          },
+          {
+            "type": "string",
+            "value": "text"
+          },
+          {
+            "type": "bool",
+            "value": true
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "list",
+            "value": [
+              {
+                "type": "int",
+                "value": 1
+              },
+              {
+                "type": "int",
+                "value": 2
+              }
+            ]
+          },
+          {
+            "type": "object",
+            "value": {
+              "a": {
+                "type": "int",
+                "value": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "struct_nested_complex",
+      "description": "Complex nested structure",
+      "input": "{\"users\": [{\"id\": 1, \"name\": \"Alice\", \"scores\": [95, 87, 92]}, {\"id\": 2, \"name\": \"Bob\", \"scores\": [88, 91, 85]}], \"metadata\": {\"count\": 2, \"updated\": \"2024-01-01T00:00:00Z\"}}",
+      "expected": {
+        "type": "object",
+        "value": {
+          "users": {
+            "type": "list",
+            "value": [
+              {
+                "type": "object",
+                "value": {
+                  "id": {
+                    "type": "int",
+                    "value": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "value": "Alice"
+                  },
+                  "scores": {
+                    "type": "list",
+                    "value": [
+                      {
+                        "type": "int",
+                        "value": 95
+                      },
+                      {
+                        "type": "int",
+                        "value": 87
+                      },
+                      {
+                        "type": "int",
+                        "value": 92
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "value": {
+                  "id": {
+                    "type": "int",
+                    "value": 2
+                  },
+                  "name": {
+                    "type": "string",
+                    "value": "Bob"
+                  },
+                  "scores": {
+                    "type": "list",
+                    "value": [
+                      {
+                        "type": "int",
+                        "value": 88
+                      },
+                      {
+                        "type": "int",
+                        "value": 91
+                      },
+                      {
+                        "type": "int",
+                        "value": 85
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "value": {
+              "count": {
+                "type": "int",
+                "value": 2
+              },
+              "updated": {
+                "type": "string",
+                "value": "2024-01-01T00:00:00Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "struct_object_duplicate_keys",
+      "description": "Object with duplicate keys (last wins)",
+      "input": "{\"a\": 1, \"b\": 2, \"a\": 3}",
+      "expected": {
+        "type": "object",
+        "value": {
+          "a": {
+            "type": "int",
+            "value": 3
+          },
+          "b": {
+            "type": "int",
+            "value": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "struct_trailing_comma_list_invalid",
+      "description": "Trailing comma in list is invalid",
+      "input": "[1, 2, 3,]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_trailing_comma_object_invalid",
+      "description": "Trailing comma in object is invalid",
+      "input": "{\"a\": 1,}",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_trailing_comma_single_invalid",
+      "description": "Trailing comma with single element is invalid",
+      "input": "[1,]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_object_key_number_invalid",
+      "description": "Object key must be string (number key invalid)",
+      "input": "{1: 2}",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_object_key_bool_invalid",
+      "description": "Object key must be string (bool key invalid)",
+      "input": "{true: 1}",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_object_key_null_invalid",
+      "description": "Object key must be string (null key invalid)",
+      "input": "{null: 1}",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_object_key_bare_ident_invalid",
+      "description": "Object key must be quoted string (bare identifier key invalid)",
+      "input": "{a: 1}",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_whitespace_compact",
+      "description": "Compact whitespace: [1,2,3]",
+      "input": "[1,2,3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "value": 2
+          },
+          {
+            "type": "int",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "struct_whitespace_normal",
+      "description": "Normal whitespace: [1, 2, 3]",
+      "input": "[1, 2, 3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "value": 2
+          },
+          {
+            "type": "int",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "struct_whitespace_extra",
+      "description": "Extra whitespace: [ 1 , 2 , 3 ]",
+      "input": "[ 1 , 2 , 3 ]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "value": 2
+          },
+          {
+            "type": "int",
+            "value": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "struct_top_level_scalar",
+      "description": "Top-level scalar in structure format is valid",
+      "input": "1",
+      "expected": {
+        "type": "int",
+        "value": 1
+      }
+    },
+    {
+      "id": "struct_trailing_tokens_invalid",
+      "description": "Trailing tokens after structure is invalid",
+      "input": "[1] [2]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "struct_empty_returns_empty_object",
+      "description": "Empty input returns empty object via public parse API",
+      "input": "",
+      "expected": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    {
+      "id": "struct_single_space_returns_empty_object",
+      "description": "Single-space input returns empty object via public parse API",
+      "input": " ",
+      "expected": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    {
+      "id": "struct_whitespace_only_returns_empty_object",
+      "description": "Whitespace-only spaces return empty object via public parse API",
+      "input": "   ",
+      "expected": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    {
+      "id": "struct_newline_only_returns_empty_object",
+      "description": "Newline-only input returns empty object via public parse API",
+      "input": "\n",
+      "expected": {
+        "type": "object",
+        "value": {}
+      }
+    },
+    {
+      "id": "struct_bom_prefix",
+      "description": "BOM prefix is accepted",
+      "input": "﻿[1, 2, 3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "int",
+            "value": 1
+          },
+          {
+            "type": "int",
+            "value": 2
+          },
+          {
+            "type": "int",
+            "value": 3
+          }
+        ]
+      }
+    }
+  ]
+}

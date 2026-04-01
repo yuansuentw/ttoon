@@ -1,0 +1,194 @@
+{
+  "description": "String parsing: escapes, Unicode, edge cases",
+  "tests": [
+    {
+      "id": "string_empty",
+      "description": "Empty string",
+      "input": "[\"\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": ""}]
+      }
+    },
+    {
+      "id": "string_single_space",
+      "description": "Single space string",
+      "input": "[\" \"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": " "}]
+      }
+    },
+    {
+      "id": "string_multiple_spaces",
+      "description": "Multiple spaces string",
+      "input": "[\"   \"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "   "}]
+      }
+    },
+    {
+      "id": "string_newline_only",
+      "description": "Newline-only string",
+      "input": "[\"\\n\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "\n"}]
+      }
+    },
+    {
+      "id": "string_escape_newline",
+      "description": "Escaped newline \\n",
+      "input": "[\"hello\\nworld\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "hello\nworld"}]
+      }
+    },
+    {
+      "id": "string_escape_tab",
+      "description": "Escaped tab \\t",
+      "input": "[\"tab\\there\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "tab\there"}]
+      }
+    },
+    {
+      "id": "string_escape_quote",
+      "description": "Escaped quote \\\"",
+      "input": "[\"quote\\\"inside\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "quote\"inside"}]
+      }
+    },
+    {
+      "id": "string_escape_backslash",
+      "description": "Escaped backslash \\\\",
+      "input": "[\"backslash\\\\path\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "backslash\\path"}]
+      }
+    },
+    {
+      "id": "string_escape_carriage_return",
+      "description": "Escaped carriage return \\r",
+      "input": "[\"carriage\\rreturn\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "carriage\rreturn"}]
+      }
+    },
+    {
+      "id": "string_escape_formfeed",
+      "description": "Escaped form feed \\f",
+      "input": "[\"form\\ffeed\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "form\ffeed"}]
+      }
+    },
+    {
+      "id": "string_escape_backspace",
+      "description": "Escaped backspace \\b",
+      "input": "[\"back\\bspace\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "back\bspace"}]
+      }
+    },
+    {
+      "id": "string_escape_slash",
+      "description": "Escaped slash \\/",
+      "input": "[\"slash\\/test\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "slash/test"}]
+      }
+    },
+    {
+      "id": "string_unicode_chinese",
+      "description": "Chinese characters",
+      "input": "[\"中文\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "中文"}]
+      }
+    },
+    {
+      "id": "string_unicode_japanese",
+      "description": "Japanese characters",
+      "input": "[\"日本語\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "日本語"}]
+      }
+    },
+    {
+      "id": "string_unicode_korean",
+      "description": "Korean characters",
+      "input": "[\"한글\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "한글"}]
+      }
+    },
+    {
+      "id": "string_unicode_emoji",
+      "description": "Emoji characters",
+      "input": "[\"Emoji: 😀🎉\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "Emoji: 😀🎉"}]
+      }
+    },
+    {
+      "id": "string_unicode_mixed",
+      "description": "Mixed English and Chinese",
+      "input": "[\"Mixed: hello世界\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "Mixed: hello世界"}]
+      }
+    },
+    {
+      "id": "string_unicode_escape_A",
+      "description": "Unicode escape \\u0041 = 'A'",
+      "input": "[\"\\u0041\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "A"}]
+      }
+    },
+    {
+      "id": "string_unicode_escape_chinese",
+      "description": "Unicode escape \\u4E2D = '中'",
+      "input": "[\"\\u4E2D\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "中"}]
+      }
+    },
+    {
+      "id": "string_unicode_escape_null",
+      "description": "Unicode escape \\u0000 = null character",
+      "input": "[\"\\u0000\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "\u0000"}]
+      }
+    },
+    {
+      "id": "string_surrogate_pair_emoji",
+      "description": "Surrogate pair \\uD83D\\uDE00 = 😀",
+      "input": "[\"\\uD83D\\uDE00\"]",
+      "expected": {
+        "type": "list",
+        "value": [{"type": "string", "value": "😀"}]
+      }
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "description": "Float parsing: basic, special values, scientific notation, precision",
+  "tests": [
+    {
+      "id": "float_basic_values",
+      "description": "Basic float values: 1.0, -0.5, 1e3",
+      "input": "[1.0, -0.5, 1e3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 1
+          },
+          {
+            "type": "float",
+            "value": -0.5
+          },
+          {
+            "type": "float",
+            "value": 1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_trailing_dot_invalid",
+      "description": "Trailing dot (1.) is invalid",
+      "input": "[1.]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_uppercase_E_invalid",
+      "description": "Uppercase E (1E3) is invalid",
+      "input": "[1E3]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_underscore_in_float_invalid",
+      "description": "Underscore in float (1_0.0) is invalid",
+      "input": "[1_0.0]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_inf",
+      "description": "Positive infinity: inf",
+      "input": "[inf]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": "+Infinity"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_positive_inf",
+      "description": "Explicit positive infinity: +inf",
+      "input": "[+inf]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": "+Infinity"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_negative_inf",
+      "description": "Negative infinity: -inf",
+      "input": "[-inf]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": "-Infinity"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_nan",
+      "description": "NaN value",
+      "input": "[nan]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": "NaN"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_Inf_capitalized_invalid",
+      "description": "Capitalized Inf is invalid",
+      "input": "[Inf]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_INF_uppercase_invalid",
+      "description": "Uppercase INF is invalid",
+      "input": "[INF]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_NaN_capitalized_invalid",
+      "description": "Capitalized NaN is invalid",
+      "input": "[NaN]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_NAN_uppercase_invalid",
+      "description": "Uppercase NAN is invalid",
+      "input": "[NAN]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_positive_Inf_invalid",
+      "description": "Capitalized +Inf is invalid",
+      "input": "[+Inf]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_negative_Inf_invalid",
+      "description": "Capitalized -Inf is invalid",
+      "input": "[-Inf]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_zero_positive",
+      "description": "Positive zero: 0.0",
+      "input": "[0.0]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_zero_explicit_positive",
+      "description": "Explicit positive zero: +0.0",
+      "input": "[+0.0]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_negative_zero",
+      "description": "Negative zero: -0.0",
+      "input": "[-0.0]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": "-0.0"
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_leading_dot_invalid",
+      "description": "Leading dot (.5) is invalid",
+      "input": "[.5]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_multiple_dots_invalid",
+      "description": "Multiple dots (1.2.3) is invalid",
+      "input": "[1.2.3]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_missing_exponent_invalid",
+      "description": "Missing exponent (1e) is invalid",
+      "input": "[1e]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_missing_exponent_plus_invalid",
+      "description": "Missing exponent digits (1e+) is invalid",
+      "input": "[1e+]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_missing_exponent_minus_invalid",
+      "description": "Missing exponent digits (1e-) is invalid",
+      "input": "[1e-]",
+      "expected": {
+        "error": "parse_error"
+      }
+    },
+    {
+      "id": "float_scientific_1e3",
+      "description": "Scientific notation: 1e3 = 1000.0",
+      "input": "[1e3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_scientific_1_5e2",
+      "description": "Scientific notation: 1.5e2 = 150.0",
+      "input": "[1.5e2]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 150
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_scientific_1e_minus_3",
+      "description": "Scientific notation: 1e-3 = 0.001",
+      "input": "[1e-3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 0.001
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_scientific_1_23e_plus_10",
+      "description": "Scientific notation: 1.23e+10",
+      "input": "[1.23e+10]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 12300000000
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_scientific_negative",
+      "description": "Scientific notation: -1e3 = -1000.0",
+      "input": "[-1e3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": -1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_scientific_positive",
+      "description": "Scientific notation: +1e3 = 1000.0",
+      "input": "[+1e3]",
+      "expected": {
+        "type": "list",
+        "value": [
+          {
+            "type": "float",
+            "value": 1000
+          }
+        ]
+      }
+    },
+    {
+      "id": "float_always_has_decimal_in_serialization",
+      "description": "Integer-valued floats preserve .0 in serialization",
+      "input": "[1.0, 2.0, 100.0]",
+      "expected_output_contains": [
+        "1.0",
+        "2.0",
+        "100.0"
+      ]
+    }
+  ]
+}

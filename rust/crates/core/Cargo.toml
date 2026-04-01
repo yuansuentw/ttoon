@@ -1,0 +1,24 @@
+[package]
+name = "ttoon-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Core Rust library for T-TOON / T-JSON typed text serialization and Arrow conversion"
+readme = "README.md"
+keywords = ["ttoon", "serialization", "parser", "arrow", "data-interchange"]
+categories = ["encoding", "parser-implementations", "database"]
+
+[lib]
+name = "ttoon_core"
+path = "src/lib.rs"
+
+[dependencies]
+base64 = "0.22"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+ryu = "1.0"
+arrow-array = "57"
+arrow-buffer = "57"
+arrow-schema = "57"
+arrow-select = "57"
+serde_json = { version = "1", features = ["preserve_order"] }
+indexmap = "2"

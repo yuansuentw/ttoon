@@ -1,0 +1,28 @@
+{
+  "name": "@ttoon/node",
+  "version": "0.1.0",
+  "description": "TTOON for Node.js — re-exports @ttoon/shared",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@ttoon/shared": "0.1.0"
+  },
+  "keywords": ["ttoon", "t-toon", "nodejs", "serialization"],
+  "license": "MIT"
+}

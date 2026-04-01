@@ -1,0 +1,303 @@
+{
+  "description": "Format detection: input text → format name",
+  "tests": [
+    {
+      "id": "detect_empty_string",
+      "description": "Empty string → typed_unit",
+      "input": "",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_scalar_number",
+      "description": "Bare number → typed_unit",
+      "input": "123",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_structure_list",
+      "description": "JSON-like list → tjson",
+      "input": "[1, 2]",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_incomplete_brace",
+      "description": "Incomplete brace → tjson (starts with {)",
+      "input": "{",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_whitespace_only_spaces",
+      "description": "Whitespace-only (spaces) → typed_unit",
+      "input": "   ",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_whitespace_only_newlines",
+      "description": "Whitespace-only (newlines) → typed_unit",
+      "input": "\n\n\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_whitespace_only_tabs",
+      "description": "Whitespace-only (tabs) → typed_unit",
+      "input": "\t\t",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_structure_list_with_whitespace",
+      "description": "List with surrounding whitespace → tjson",
+      "input": "  [1, 2]  ",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_structure_list_with_newlines",
+      "description": "List with surrounding newlines → tjson",
+      "input": "\n[1, 2]\n",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_structure_object_with_whitespace",
+      "description": "Object with surrounding whitespace → tjson",
+      "input": "  {\"a\": 1}  ",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_incomplete_close_brace",
+      "description": "Lone closing brace → typed_unit",
+      "input": "}",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_incomplete_open_bracket",
+      "description": "Lone opening bracket → tjson (starts with [)",
+      "input": "[",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_incomplete_close_bracket",
+      "description": "Lone closing bracket → typed_unit",
+      "input": "]",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_multiple_structures_lists",
+      "description": "Multiple lists on one line → tjson (starts with [)",
+      "input": "[1, 2] [3, 4]",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_multiple_structures_objects",
+      "description": "Multiple objects on one line → tjson (starts with {)",
+      "input": "{} {}",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_scalar_true",
+      "description": "Bare 'true' → typed_unit",
+      "input": "true",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_scalar_false",
+      "description": "Bare 'false' → typed_unit",
+      "input": "false",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_scalar_null",
+      "description": "Bare 'null' → typed_unit",
+      "input": "null",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_scalar_string",
+      "description": "Bare quoted string → typed_unit",
+      "input": "\"hello\"",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_structure_json_object",
+      "description": "JSON-like object → tjson",
+      "input": "{\"key\": \"value\"}",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_structure_json_list",
+      "description": "JSON-like list → tjson",
+      "input": "[1, 2, 3]",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_line_csv_numbers",
+      "description": "CSV-like numeric rows → typed_unit",
+      "input": "1,2,3\n4,5,6",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_line_mixed_values",
+      "description": "Mixed scalar row → typed_unit",
+      "input": "1, \"hello\", true",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_line_multi_row",
+      "description": "Multi-row scalars → typed_unit",
+      "input": "1, 2, 3\n4, 5, 6",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_line_null_mixed",
+      "description": "Mixed with null → typed_unit",
+      "input": "null, 123, 3.14",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_line_string_rows",
+      "description": "String rows → typed_unit",
+      "input": "\"a\", \"b\", \"c\"\n\"d\", \"e\", \"f\"",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_tabular_with_fields",
+      "description": "TOON tabular header with fields → ttoon",
+      "input": "[5]{name,age}:",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_no_fields",
+      "description": "TOON tabular header without field names → ttoon",
+      "input": "[3]:",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_empty",
+      "description": "TOON tabular empty header → ttoon",
+      "input": "[0]{}:",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_with_data",
+      "description": "TOON tabular with data rows → ttoon",
+      "input": "[2]{name,score}:\nAlice, 95\nBob, 87\n",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_streaming_tabular_header",
+      "description": "Streaming tabular header [*]{fields}: → ttoon",
+      "input": "[*]{name,score}:\nAlice, 95\n",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_with_full_data",
+      "description": "TOON tabular with 3 fields and data → ttoon",
+      "input": "[3]{id,name,score}:\n1,Alice,95\n2,Bob,87\n3,Carol,91",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_single_field",
+      "description": "TOON tabular single field → ttoon",
+      "input": "[1]{id}:\n1",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_large_count",
+      "description": "TOON tabular large row count → ttoon",
+      "input": "[100]{a,b,c}:\n1,2,3",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_tabular_key_prefix",
+      "description": "key[N]{fields}: starts with letter → typed_unit",
+      "input": "users[2]{name,age}:\n  Alice, 30\n  Bob, 25\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_key_value",
+      "description": "T-TOON key: value format → typed_unit",
+      "input": "name: Alice\nage: 30\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_indented",
+      "description": "T-TOON indented format → typed_unit",
+      "input": "user:\n  name: Bob\n  age: 25\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_list_item",
+      "description": "T-TOON list item format (- prefix) → typed_unit",
+      "input": "- hello\n- world\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_array_header",
+      "description": "T-TOON inline array (not tabular) → typed_unit",
+      "input": "tags[3]: a, b, c\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_inline_array_first_line",
+      "description": "key[N]: values inline → typed_unit",
+      "input": "tags[3]: a, b, c\nname: Alice\n",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_structure_empty_list",
+      "description": "Empty JSON list → tjson",
+      "input": "[]",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_structure_empty_object",
+      "description": "Empty JSON object → tjson",
+      "input": "{}",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_whitespace_with_newline",
+      "description": "Whitespace with newlines → typed_unit",
+      "input": "   \n  ",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_structure_bare_key_value",
+      "description": "T-TOON simple key: value → typed_unit",
+      "input": "name: Alice\nage: 30",
+      "expected_format": "typed_unit"
+    },
+    {
+      "id": "detect_ttoon_inline_list",
+      "description": "TOON list header with inline data → ttoon",
+      "input": "[3]: a, b, c",
+      "expected_format": "ttoon"
+    },
+    {
+      "id": "detect_ttoon_streaming_no_fields",
+      "description": "Streaming header without fields [*]: is not valid tabular → tjson",
+      "input": "[*]:",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_ttoon_streaming_inline_array",
+      "description": "Streaming inline array [*]: v1, v2 is not valid → tjson",
+      "input": "[*]: 1, 2",
+      "expected_format": "tjson"
+    },
+    {
+      "id": "detect_toon_header_invalid_count_alpha",
+      "description": "[3x]: routes to ttoon (intent detection, not validation; parser rejects invalid row count)",
+      "input": "[3x]:",
+      "expected_format": "ttoon",
+      "expected_parse_error": true,
+      "expected_parse_error_contains": "invalid row count"
+    },
+    {
+      "id": "detect_toon_header_invalid_count_csv",
+      "description": "[3,4,5]: routes to ttoon (bracket content not validated; parser rejects)",
+      "input": "[3,4,5]:",
+      "expected_format": "ttoon",
+      "expected_parse_error": true,
+      "expected_parse_error_contains": "invalid row count"
+    }
+  ]
+}

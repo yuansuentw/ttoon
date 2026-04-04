@@ -5,6 +5,9 @@ edition = "2021"
 license = "MIT"
 description = "Core Rust library for T-TOON / T-JSON typed text serialization and Arrow conversion"
 readme = "README.md"
+documentation = "https://docs.rs/ttoon-core"
+homepage = "https://ttoon.dev/"
+repository = "https://github.com/yuansuentw/ttoon"
 keywords = ["ttoon", "serialization", "parser", "arrow", "data-interchange"]
 categories = ["encoding", "parser-implementations", "database"]
 

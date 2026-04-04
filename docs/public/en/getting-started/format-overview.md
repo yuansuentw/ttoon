@@ -2,30 +2,31 @@
 title: Format Overview
 sidebar_position: 3
 sidebar_label: Format Overview
-description: T-TOON and T-JSON syntax overview, typed value system, and escape rules.
+description: Beginner introduction to T-TOON, T-JSON, and the basic typed value rules.
 ---
 
 # Format Overview
 
-TTOON provides two syntaxes — T-TOON and T-JSON — that share the same typed value layer but differ in structural syntax. This page covers the essentials of both.
+TTOON has two text syntaxes:
 
-## Terminology at a Glance
+- **T-TOON**: indentation-based, optimized for reading and editing by humans
+- **T-JSON**: bracket-based, closer to JSON tooling and habits
+- **Shared typed value layer**: both syntaxes use the same value encoding rules
 
-- **typed**: the overall design idea that text values carry explicit type semantics in their encoding.
-- **typed types**: the 12 built-in value encoding categories.
-- **typed unit**: one concrete encoded value such as `123.45m`, `2026-03-08`, or `uuid(...)`.
-- `hex` and `b64` are listed separately because they are distinct typed types, even though both represent binary payloads.
+T-TOON is an extension of [TOON](https://toonformat.dev/), the original format from the [toon-format project](https://github.com/toon-format/toon). It keeps TOON's indentation-based object layout and compact tabular form, then adds explicit typed values and the companion T-JSON syntax.
 
-## T-TOON Syntax
+Most parse APIs auto-detect the input format, so in many workflows you can choose the syntax based on readability and interoperability rather than parser configuration.
 
-T-TOON uses indentation-based structure with no redundant brackets. It is designed for human reading and manual editing.
+## T-TOON at a Glance
+
+T-TOON removes redundant brackets and uses indentation to express structure.
 
 ### Object
 
 ```text
 name: "Alice"
 age: 30
-tags[2]: "admin", "ops"
+active: true
 ```
 
 ### Nested Object
@@ -37,7 +38,7 @@ user:
     city: "Taipei"
 ```
 
-### Tabular (List of Uniform Objects)
+### Tabular Data
 
 ```text
 [2]{name,score}:
@@ -45,11 +46,11 @@ user:
 "Bob", 87
 ```
 
-The header `[N]{fields}:` declares row count and column names. Delimiters can be comma (default), tab, or pipe.
+The `[N]{fields}:` header declares row count and column names. This is the compact form for a list of uniform objects.
 
-## T-JSON Syntax
+## T-JSON at a Glance
 
-T-JSON uses JSON-like `{}` / `[]` brackets. Object keys must be quoted strings (following JSON rules). The value layer uses typed syntax instead of plain JSON values.
+T-JSON keeps JSON-like `{}` / `[]` structure, but values still use TTOON typed syntax.
 
 ### Object
 
@@ -69,77 +70,43 @@ T-JSON uses JSON-like `{}` / `[]` brackets. Object keys must be quoted strings (
 {"user": {"name": "Alice", "scores": [95, 87]}}
 ```
 
-## Typed Value System
+## Typed Values at a Glance
 
-Both syntaxes share the same 12 typed value encodings, that is, the same set of `typed types`:
+Both syntaxes share the same 12 built-in typed value encodings:
 
-| Type | Example | Notes |
-| :--- | :--- | :--- |
-| `null` | `null` | Null value |
-| `bool` | `true` / `false` | Lowercase keywords |
-| `int` | `42` / `-1_000` | Sign prefixes and `_` separators allowed |
-| `float` | `3.14` / `1e-9` / `inf` / `nan` | Floating point with scientific notation and special values |
-| `decimal` | `123.45m` | Lowercase `m` suffix; no scientific notation; full precision preserved |
-| `string` | `"Alice"` | Always double-quoted |
-| `date` | `2026-03-08` | `YYYY-MM-DD` |
-| `time` | `14:30:00.123456` | Up to microsecond precision |
-| `datetime` | `2026-03-08T14:30:00+08:00` | ISO 8601 with optional timezone |
-| `uuid` | `uuid(550e8400-e29b-41d4-a716-446655440000)` | Wrapper to prevent misidentification as string |
-| `hex(...)` | `hex(4A42)` | Hexadecimal binary encoding |
-| `b64(...)` | `b64(SkI=)` | Base64 binary encoding |
+| Type | Example |
+| :--- | :--- |
+| `null` | `null` |
+| `bool` | `true` |
+| `int` | `42` |
+| `float` | `3.14` |
+| `decimal` | `123.45m` |
+| `string` | `"Alice"` |
+| `date` | `2026-03-08` |
+| `time` | `14:30:00` |
+| `datetime` | `2026-03-08T14:30:00+08:00` |
+| `uuid` | `uuid(550e8400-e29b-41d4-a716-446655440000)` |
+| `hex` | `hex(48656C6C6F)` |
+| `b64` | `b64(SGVsbG8=)` |
 
-### Why These 12 Typed Types
+## Three Rules to Remember
 
-TTOON `typed types` are not a copy of any single database or language type system. They are chosen as the practical intersection across mainstream RDBMSs, Arrow, and the Python / JS / Rust SDKs.
+- **Strings are always quoted**: use `"..."`, not bare words
+- **Exact decimal uses `m`**: `123.45m` is decimal, `123.45` is float
+- **UUID and binary use wrappers**: `uuid(...)`, `hex(...)`, `b64(...)`
 
-The goal is to keep a type layer that is:
-
-- sufficient for common cross-system data interchange
-- stable across both the object path and the Arrow path
-- portable without binding the format to vendor-specific database types
-
-For that reason, types such as `jsonb`, `enum`, `interval`, `array`, geospatial types, or `money` are not built-in typed types for now. They should be handled by higher-level schema conventions or custom codecs.
-
-### Key Rules
-
-- **Strings are always quoted**: All string values use double quotes `"..."` to eliminate bare token ambiguity.
-- **Decimal uses `m` suffix**: `123.45m` — this distinguishes exact decimal from floating point `123.45`.
-- **UUID and binary use wrappers**: `uuid(...)`, `hex(...)`, `b64(...)` — preventing misidentification as strings.
-
-## Escape Rules
-
-### T-TOON
-
-T-TOON allows only 5 escape sequences: `\\`, `\"`, `\n`, `\r`, `\t`. Any other escape (e.g., `\uXXXX`) is rejected.
-
-### T-JSON
-
-T-JSON follows the full JSON escape ruleset, including `\uXXXX` Unicode escapes, `\b`, `\f`, etc.
-
-## Format Detection
-
-TTOON auto-detects the input format:
-
-- First non-whitespace character is `{` → **T-JSON**
-- First line matches tabular header `[N]{fields}:` or `[N]:` → **T-TOON** tabular
-- First non-whitespace character is `[` but it does not match a tabular header → **T-JSON**
-- Otherwise → `typed_unit` from `detect_format()`; the T-TOON parser then distinguishes indentation-based structure from a single typed value
-
-Once a format is determined, the parser does not fall back to another format.
-
-## When to Use Which
+## Which Syntax Should I Use?
 
 | Scenario | Recommended |
 | :--- | :--- |
 | Human-readable config, logs, or diffs | T-TOON |
 | Large tabular datasets | T-TOON tabular |
-| Interop with JSON-based systems | T-JSON |
-| Bracket-based structure required | T-JSON |
-| Cross-language object exchange | Either (auto-detected on parse) |
+| JSON-like downstream integration | T-JSON |
+| Bracket-based nesting preferred | T-JSON |
+| Cross-language object exchange | Either |
 
 ## Next Steps
 
-- **[Why TTOON?](../concepts/why-ttoon.md)** — Deeper motivation and positioning
-- **[T-TOON vs T-JSON](../concepts/ttoon-vs-tjson.md)** — Detailed comparison
-- **[Typed Values](../concepts/typed-values.md)** — Complete type reference and cross-language behavior
-- **[Type Mapping](../reference/type-mapping.md)** — Type mapping across SDKs, Arrow, and mainstream RDBMSs
+- **[Typed Value Reference](../reference/typed-value-reference.md)** — Full type semantics, detailed syntax rules, cross-language mapping, Arrow mapping, and RDBMS correspondence
+- **[Format Detection](../reference/format-detection.md)** — Exact auto-detection rules for `tjson`, `ttoon`, and `typed_unit`
+- **[T-TOON vs T-JSON](../concepts/ttoon-vs-tjson.md)** — More detailed comparison between the two syntaxes

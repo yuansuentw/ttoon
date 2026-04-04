@@ -25,6 +25,12 @@ dependencies = [
     "pyarrow>=23.0.0",
 ]
 
+[project.urls]
+Homepage = "https://ttoon.dev/"
+Documentation = "https://ttoon.dev/"
+Repository = "https://github.com/yuansuentw/ttoon"
+Issues = "https://github.com/yuansuentw/ttoon/issues"
+
 [build-system]
 requires = ["maturin>=1.5,<2.0"]
 build-backend = "maturin"

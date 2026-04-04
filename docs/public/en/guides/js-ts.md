@@ -235,4 +235,4 @@ For `tjsonToTtoon()` and `ttoonToTjson()`, prefer `e.sourceKind` and `e.source.m
 - **[JS Codecs & Int64](js-codecs-and-int64.md)** — Deep dive into codecs and BigInt strategies
 - **[Arrow & Polars Guide](arrow-and-polars.md)** — Tabular path details
 - **[Streaming Guide](streaming.md)** — Row-by-row processing
-- **[JS API Reference](../reference/js-api.md)** — Complete API signatures
+- **[API Matrix](../reference/api-matrix.md)** — Entry point to the grouped batch and stream API references

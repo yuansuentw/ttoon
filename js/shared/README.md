@@ -2,6 +2,8 @@
 
 `@ttoon/shared` is the core JavaScript and TypeScript package for TTOON.
 
+Call `await initWasm()` once before using the parsing and serialization APIs.
+
 ## Features
 
 - `parse()` / `stringify()`
@@ -25,7 +27,9 @@ npm install @ttoon/shared apache-arrow
 ## Quick Example
 
 ```ts
-import { parse, stringify, toon, toTjson } from '@ttoon/shared';
+import { initWasm, parse, stringify, toon, toTjson } from '@ttoon/shared';
+
+await initWasm();
 
 const text = stringify({ name: 'Alice', score: 95 });
 const data = parse(text);

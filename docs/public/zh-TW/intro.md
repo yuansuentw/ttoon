@@ -2,84 +2,88 @@
 title: 介紹 (Introduction)
 sidebar_position: 1
 sidebar_label: 介紹
-description: TTOON — 適用於 Python、JavaScript 和 Rust 的具型別純文字數據交換格式。
+description: TTOON 格式、SDK 與處理路徑的技術總覽。
 ---
 
 # TTOON
 
-TTOON 是一種為現代數據工作流程設計的**具型別純文字 (typed plain text)** 數據交換格式。它在一個專案中提供了兩種相輔相成的語法：
+TTOON 是一套具型純文字資料交換系統，在同一專案下提供兩種互補語法：
 
-- **T-TOON** — 一種簡潔的、基於縮排的結構，並具有適用於資料集的原生表格佈局。
-- **T-JSON** — 一種類似 JSON 的結構，在葉節點層級保留了具型別值的語法。
+- **T-TOON**：基於縮排，從 TOON v3.0 延伸
+- **T-JSON**：維持 JSON 結構，僅在 leaf value 層使用相同的 typed value 系統
 
-TTOON 是一個**獨立專案**。其中 `T-TOON` 是基於 TOON v3.0 延伸的縮排式語法，`T-JSON` 則是同一套 typed value system 的 JSON-like 結構語法；兩者是同一專案下的互補表示法，不是彼此無關的兩個格式。
+它們不是兩個獨立產品，而是建立在同一套 typed model 與同一個 Rust core 上的兩種序列化語法。
 
-## 為何選擇 TTOON？
+## 格式模型
 
-大多數序列化格式會迫使您在可讀性或機器精度之間做出權衡。TTOON 拒絕妥協：
+| 語法 | 結構 | 適合情境 |
+| :--- | :--- | :--- |
+| `T-TOON` | 縮排式，支援 tabular `[N]{fields}:` 區塊 | 可讀性優先的資料與表格資料集 |
+| `T-JSON` | JSON 結構，leaf value 可帶 typed 語意 | 需要 JSON 風格容器的整合場景 |
 
-- **型別保真度 (Type fidelity)** — 跨語言邊界保留 `decimal`、`date`、`time`、`datetime`、`uuid` 和 `binary`，而不必將所有內容降級為字串。
-- **人類可讀 (Human readable)** — 純文字輸出，易於閱讀、比較差異和進行視覺化除錯。
-- **高效能 (High performance)** — 提供一流的 Apache Arrow 與 Polars 整合，並為表格數據提供零拷貝 (zero-copy) 路徑。
-- **跨語言 (Cross-language)** — 透過共用的 Rust 核心引擎，在 Python、JavaScript/TypeScript 和 Rust 之間實現完全一致的行為。
-- **輕量級執行期 (Lightweight runtime)** — 不需要完整的 Node.js；可在 Vercel 函數、Cloudflare Workers 和 Supabase Edge functions 中運行。
+兩種語法共用同一組 typed values。目前支援的 typed set 包含：
 
-## 官方 SDK
+- `null`、`bool`、`int`、`float`、`decimal`、`string`
+- `date`、`time`、`datetime`
+- `uuid`、`hex`、`b64`
+
+實際編碼規則與範例請見 [Typed Value Reference](reference/typed-value-reference.md)。
+
+## SDK 與共用核心
 
 | 語言 | 套件 | 架構 |
 | :--- | :--- | :--- |
-| Python | `ttoon` | 透過 PyO3 橋接的 Rust 核心 |
-| JavaScript / TypeScript | `@ttoon/shared` | 透過 WASM 橋接的 Rust 核心 |
+| Python | `ttoon` | 透過 PyO3 橋接 Rust 核心 |
+| JavaScript / TypeScript | `@ttoon/shared` | 透過 WASM 橋接 Rust 核心 |
 | JavaScript / Node.js | `@ttoon/node` | 重新匯出 `@ttoon/shared` |
 | JavaScript / Web | `@ttoon/web` | 重新匯出 `@ttoon/shared` |
 | Rust | `ttoon-core` | 核心引擎 (標準實作) |
 
-所有三種語言的 SDK 都共用相同的 Rust 核心，確保了完全一致的解析和序列化行為。API 表面在所有語言中完全對齊 (18/18) — 涵蓋批次處理、串流和轉碼操作。
+Python、JavaScript 與 Rust 的解析與序列化語意都由同一個 Rust core 提供。公開 API 範圍請見 [API Matrix](reference/api-matrix.md)。
 
-## 快速範例
+## 處理路徑
 
-### Python
+TTOON 在各語言 SDK 中提供兩條主要執行路徑：
 
-```python
-import ttoon
+- **object path**：進出語言原生物件
+- **Arrow path**：直接處理 columnar 資料，不先具現化成逐列物件
 
-text = ttoon.dumps({"name": "Alice", "amount": 123.45})
-data = ttoon.loads(text)
+API 也分成兩種 I/O 風格：
+
+- **batch API**：整份文件或整張 table 的 parse / stringify
+- **stream API**：以 schema 驅動的逐列 reader / writer
+
+相關頁面：
+
+- [object path vs Arrow path](concepts/object-path-vs-arrow-path.md)
+- [T-TOON 批次 API](reference/ttoon-batch-api.md)
+- [T-JSON 批次 API](reference/tjson-batch-api.md)
+- [Stream API](reference/stream-api.md)
+
+## 最小範例
+
+```ttoon
+user:
+  id: uuid(550e8400-e29b-41d4-a716-446655440000)
+  name: "Alice"
+  joined: 2026-03-08
+  balance: 123.45m
+tags: [2]:
+  - "alpha"
+  - "beta"
 ```
 
-### JavaScript / TypeScript
+這份文件在 round trip 後，型別不會全部退化成字串：
 
-```ts
-import { parse, stringify } from '@ttoon/shared';
+- `uuid(...)` 仍保留 UUID 語意，而非普通字串標記
+- `2026-03-08` 仍是 date
+- `123.45m` 仍是 decimal
+- tabular 與 Arrow path 可保留資料集的 columnar 語意
 
-const text = stringify({ name: 'Alice', amount: 123.45 });
-const data = parse(text);
-```
+## 建議先讀
 
-### Rust
-
-```rust
-use ttoon_core::{from_ttoon, to_ttoon};
-
-let node = from_ttoon("name: \"Alice\"\nage: 30")?;
-let text = to_ttoon(&node, None)?;
-```
-
-## 核心功能
-
-| 功能 | 描述 |
-| :--- | :--- |
-| **批次解析 / 序列化 (Batch parse / serialize)** | 雙向支援 `T-TOON` 和 `T-JSON`，適用於物件和 Arrow 表格 |
-| **串流 I/O (Streaming I/O)** | 支援兩種格式的逐行讀取器與寫入器，提供物件和 Arrow 變體 |
-| **直接轉碼 (Direct transcode)** | `T-JSON → T-TOON` 和 `T-TOON → T-JSON` 轉換，無需具現化為特定語言的原生物件 |
-| **格式偵測 (Format detection)** | 基本輸入文字自動偵測 `tjson`、`ttoon` 或 `typed_unit` |
-| **Schema 系統 (Schema system)** | 用於串流操作的具有型別欄位定義的 `StreamSchema` |
-| **編解碼器擴充性 (Codec extensibility)** | 在 JS 和 Python 中支援自訂的型別對應 (例如 `Decimal`、`BigInt`、`Temporal`) |
-
-## 下一步
-
-- **[安裝 (Installation)](getting-started/installation.md)** — 在您的專案中設定 TTOON
-- **[快速開始 (Quick Start)](getting-started/quick-start.md)** — 2 分鐘完成您的第一次來回轉換
-- **[格式總覽 (Format Overview)](getting-started/format-overview.md)** — 了解 T-TOON 和 T-JSON 語法
-- **[為何選擇 TTOON？ (Why TTOON?)](concepts/why-ttoon.md)** — 更深入的動機與使用案例
-- **[API 矩陣 (API Matrix)](reference/api-matrix.md)** — 完整的跨語言 API 比較
+- **[安裝](getting-started/installation.md)** — 套件安裝與環境設定
+- **[快速開始](getting-started/quick-start.md)** — 各語言的第一個端到端範例
+- **[格式總覽](getting-started/format-overview.md)** — 精確語法與 typed value 規則
+- **[Typed Value Reference](reference/typed-value-reference.md)** — 各型別的編碼細節
+- **[API Matrix](reference/api-matrix.md)** — 跨語言 API 比較

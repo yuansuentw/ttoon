@@ -154,6 +154,7 @@ T-JSON streaming uses a top-level JSON array of objects format.
 ```python
 with ttoon.stream_writer_tjson(sink, schema=schema) as writer:
     writer.write({"name": "Alice", "score": 95})
+    writer.write({"name": "Bob", "score": 87})
 ```
 
 Output:
@@ -181,6 +182,8 @@ await writer.close();
 for row in ttoon.stream_read_tjson(source, schema=schema):
     print(row)
 ```
+
+For T-JSON streaming readers, `mode` only affects how schema-unknown fields are handled. It does not make JSON value syntax less strict.
 
 #### JavaScript / TypeScript
 
@@ -250,7 +253,7 @@ for await (const batch of streamReadArrow(source, { schema, batchSize: 1024 })) 
 | Option | All Readers | Arrow Readers | Description |
 | :--- | :--- | :--- | :--- |
 | `schema` | Required | Required | Field definitions |
-| `mode` | Yes | Yes | `"compat"` or `"strict"` |
+| `mode` | Yes | Yes | `"compat"` or `"strict"`; for T-JSON streaming, this controls unknown-field handling against the schema |
 | `codecs` | Object readers only | No | Codec overrides |
 | `batch_size` / `batchSize` | No | Yes | Rows per Arrow batch (default 1024) |
 

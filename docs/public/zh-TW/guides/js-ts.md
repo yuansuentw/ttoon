@@ -2,12 +2,12 @@
 title: JavaScript / TypeScript 指南
 sidebar_position: 2
 sidebar_label: JS / TS
-description: 使用 JavaScript 和 TypeScript 操作 TTOON 的完整指南 — 包含批次處理、Arrow、編解碼器、串流與轉碼。
+description: 使用 JavaScript 和 TypeScript 操作 TTOON 的完整指南 — 包含批次處理、Arrow、codec、串流與轉碼。
 ---
 
 # JavaScript / TypeScript 指南
 
-`@ttoon/shared` 套件使用 WASM 橋接來呼叫 Rust 核心引擎以進行解析和序列化。JS 層添加了一個編解碼器 (codec) 系統來處理自訂型別對應 (因為 JS 缺乏原生的 `Decimal`, `UUID` 等型別)。
+`@ttoon/shared` 套件使用 WASM 橋接來呼叫 Rust 核心引擎以進行解析和序列化。JS 層添加了一個 codec 系統來處理自訂型別對應 (因為 JS 缺乏原生的 `Decimal`, `UUID` 等型別)。
 
 ## 安裝
 
@@ -17,16 +17,16 @@ npm install @ttoon/shared
 # 若要進行 Arrow 表格操作 (可選的 peer dependency)
 npm install @ttoon/shared apache-arrow
 
-# 針對自訂的十進位編解碼器 (請安裝您的編解碼器所使用的庫)
+# 針對自訂的十進位 codec (請安裝您的 codec 所使用的庫)
 npm install @ttoon/shared decimal.js
 npm install @ttoon/shared big.js
 ```
 
 > `@ttoon/node` 和 `@ttoon/web` 是特定於環境的 `@ttoon/shared` 重新匯出包。除非您需要明確分離環境，否則請直接安裝 `@ttoon/shared`。
 
-## 批次操作 (Batch Operations)
+## 批次操作
 
-### 序列化 (Serialize)：`stringify()`
+### 序列化：`stringify()`
 
 ```ts
 import { stringify, toon } from '@ttoon/shared';
@@ -40,7 +40,7 @@ const text = stringify({
 });
 ```
 
-JS 缺乏原生的 `Decimal`, `UUID`, `Date` (只有日期) 和 `Time` 型別。在序列化期間，使用 `toon.*()` 標記來指示具型別值：
+JS 缺乏原生的 `Decimal`, `UUID`, `Date` (只有日期) 和 `Time` 型別。在序列化期間，使用 `toon.*()` 標記來指示 typed value：
 
 - `toon.uuid(str)` — UUID
 - `toon.decimal(str)` — 帶有 `m` 後綴的十進位數 (Decimal)
@@ -56,7 +56,7 @@ JS 缺乏原生的 `Decimal`, `UUID`, `Date` (只有日期) 和 `Time` 型別。
 | `delimiter` | `string` | `','` | 表格分隔符：`','`, `'\t'`, 或是 `'|'` |
 | `binaryFormat` | `string` | `'hex'` | 二進位編碼：`'hex'` 或是 `'b64'` |
 
-### 反序列化 (Deserialize)：`parse()`
+### 反序列化：`parse()`
 
 ```ts
 import { parse } from '@ttoon/shared';
@@ -67,7 +67,7 @@ const strict = parse(text, { mode: 'strict' });
 
 能自動偵測格式。預設的 JS 值對應：
 
-| 具型別型別 | JS 結果 |
+| typed type | JS 結果 |
 | :--- | :--- |
 | `int` | `number` (超出安全範圍會拋出錯誤) |
 | `float` | `number` |
@@ -76,7 +76,7 @@ const strict = parse(text, { mode: 'strict' });
 | `uuid` | `string` |
 | `binary` | `Uint8Array` |
 
-若要更改這些預設值，請使用 `use()` 註冊編解碼器。
+若要更改這些預設值，請使用 `use()` 註冊 codec。
 
 ### 產生 T-JSON：`toTjson()`
 
@@ -99,7 +99,7 @@ detectFormat('key: 42');           // 'typed_unit'
 detectFormat('true');              // 'typed_unit'
 ```
 
-## 直接轉碼 (Direct Transcode)
+## 直接轉碼
 
 在不具現化 JS 物件的情況下轉換 T-JSON 和 T-TOON：
 
@@ -140,9 +140,9 @@ const restored = await readArrow(ttoonText);
 
 Arrow 的 API 都是 `async`，因為它們會動態的載入 `apache-arrow` 模組。
 
-## 編解碼器系統 (Codec System)
+## codec 系統
 
-為了避免強制依賴第三方套件，JS 預設對 `decimal`, `date`, `time`, `datetime` 和 `uuid` 回傳字串。您可以註冊編解碼器來改變此行為：
+為了避免強制依賴第三方套件，JS 預設對 `decimal`, `date`, `time`, `datetime` 和 `uuid` 回傳字串。您可以註冊 codec 來改變此行為：
 
 ```ts
 import { use, intBigInt } from '@ttoon/shared';
@@ -151,7 +151,7 @@ import { use, intBigInt } from '@ttoon/shared';
 await use({ int: intBigInt() });
 ```
 
-### 內建的 Int 編解碼器
+### 內建的 Int codec
 
 ```ts
 import { intNumber, intBigInt } from '@ttoon/shared';
@@ -166,7 +166,7 @@ await use({ int: intNumber({ overflow: 'lossy' }) });
 await use({ int: intBigInt() });
 ```
 
-### 自訂編解碼器
+### 自訂 codec
 
 ```ts
 import Decimal from 'decimal.js';
@@ -175,7 +175,7 @@ import { use, type Codec } from '@ttoon/shared';
 const decimalCodec: Codec<Decimal> = {
   type: 'decimal',
   fromPayload(payload) {
-    if (typeof payload !== 'string') throw new Error('預期的 decimal 負載 (payload)');
+    if (typeof payload !== 'string') throw new Error('expected decimal payload');
     return new Decimal(payload.slice(0, -1)); // 移除 'm' 後綴
   },
   toPayload(value) {
@@ -189,13 +189,13 @@ const decimalCodec: Codec<Decimal> = {
 await use({ decimal: decimalCodec });
 ```
 
-編解碼器會影響 JS 在 `parse()`, `stringify()`, `toTjson()` 和物件路徑串流 API 中的值對映 (value mapping)。它們不會改變 T-TOON/T-JSON 的語法、Rust/Python 行為或 Arrow schema 的推論。
+codec 會影響 JS 在 `parse()`, `stringify()`, `toTjson()` 和物件路徑串流 API 中的值對映 (value mapping)。它們不會改變 T-TOON/T-JSON 的語法、Rust/Python 行為或 Arrow schema 的推論。
 
-有關編解碼器和 int64 策略的更多資訊，請參見 [JS 編解碼器與 Int64](js-codecs-and-int64.md)。
+有關 codec 和 int64 策略的更多資訊，請參見 [JS codec 與 Int64](js-codecs-and-int64.md)。
 
-## 串流 (Streaming)
+## 串流
 
-若要進行逐行處理，請參見 [串流指南 (Streaming Guide)](streaming.md)。JS 串流讀取器回傳 `AsyncIterable`，寫入器則是基於推入 (push-based) 的類別：
+若要進行逐行處理，請參見 [串流指南](streaming.md)。JS 串流讀取器回傳 `AsyncIterable`，寫入器則是基於推入 (push-based) 的類別：
 
 ```ts
 import { streamRead, streamWriter, StreamSchema, types } from '@ttoon/shared';
@@ -232,7 +232,7 @@ try {
 
 ## 下一步
 
-- **[JS 編解碼器與 Int64](js-codecs-and-int64.md)** — 深入了解編解碼器和 BigInt 的策略
+- **[JS codec 與 Int64](js-codecs-and-int64.md)** — 深入了解 codec 和 BigInt 的策略
 - **[Arrow 與 Polars 指南](arrow-and-polars.md)** — 表格路徑詳細資訊
 - **[串流指南](streaming.md)** — 逐行處理
-- **[JS API 參考資料](../reference/js-api.md)** — 完整的 API 簽名
+- **[API 矩陣](../reference/api-matrix.md)** — 進入重新分組後的 batch / stream API 參考入口

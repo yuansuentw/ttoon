@@ -7,17 +7,19 @@ description: Install TTOON packages for Python, JavaScript/TypeScript, and Rust.
 
 # Installation
 
-TTOON `0.1.x` packages are **not published to PyPI, npm, or crates.io**. Public releases provide local-install package artifacts only. Download the matching artifact from GitHub Releases or GitHub Actions, then install from the local file.
+TTOON `0.1.x` packages are published to PyPI, npm, and crates.io. The official documentation site is [ttoon.dev](https://ttoon.dev/).
 
-## Python
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-Download the `python-wheel-*` or `python-sdist` artifact first.
+<Tabs>
+<TabItem value="python" label="Python">
 
 ```bash
-pip install ./ttoon-0.1.0-*.whl
+pip install ttoon
 ```
 
-If you only have the source distribution:
+If you need to install from a source distribution manually:
 
 ```bash
 pip install ./ttoon-0.1.0.tar.gz
@@ -35,57 +37,63 @@ pip install pyarrow polars
 
 Requires Python 3.11+. Installing from wheel does not require a Rust toolchain; installing from sdist does.
 
-## JavaScript / TypeScript
-
-Download the `js-packages` artifact first. It contains `ttoon-shared-0.1.0.tgz`, `ttoon-node-0.1.0.tgz`, and `ttoon-web-0.1.0.tgz`.
+</TabItem>
+<TabItem value="js" label="JavaScript / TypeScript">
 
 ```bash
-npm install ./ttoon-shared-0.1.0.tgz
+npm install @ttoon/shared
 ```
 
 For Arrow table operations, add the optional peer dependency:
 
 ```bash
-npm install ./ttoon-shared-0.1.0.tgz apache-arrow
+npm install @ttoon/shared apache-arrow
 ```
 
 For custom decimal codecs, install the library your codec uses. Common choices are `decimal.js` and `big.js`:
 
 ```bash
-npm install ./ttoon-shared-0.1.0.tgz decimal.js
-npm install ./ttoon-shared-0.1.0.tgz big.js
+npm install @ttoon/shared decimal.js
+npm install @ttoon/shared big.js
 ```
 
-> **Note**: `@ttoon/node` and `@ttoon/web` are environment-specific re-exports of `@ttoon/shared`. If you install them, install the matching `ttoon-shared-0.1.0.tgz` together.
+> **Note**: `@ttoon/node` and `@ttoon/web` are environment-specific re-exports of `@ttoon/shared`. Install `@ttoon/shared` directly unless you want explicit environment-specific imports.
 
 ```bash
-npm install ./ttoon-shared-0.1.0.tgz ./ttoon-node-0.1.0.tgz
-npm install ./ttoon-shared-0.1.0.tgz ./ttoon-web-0.1.0.tgz
+npm install @ttoon/node
+npm install @ttoon/web
 ```
 
 The JS SDK uses a WASM bridge to invoke the Rust core engine. The WASM module is bundled inside the package — no additional setup required.
 
-## Rust
-
-Download the `rust-crate` artifact first, unpack the `.crate`, then consume it as a local path dependency.
+</TabItem>
+<TabItem value="rust" label="Rust">
 
 ```bash
-mkdir -p vendor/ttoon-core
-tar -xzf ./ttoon-core-0.1.0.crate -C vendor/ttoon-core
-```
-
-Then add this to `Cargo.toml`:
-
-```toml
-[dependencies]
-ttoon-core = { path = "vendor/ttoon-core" }
+cargo add ttoon-core
 ```
 
 The `ttoon-core` crate includes Apache Arrow support by default.
 
+</TabItem>
+</Tabs>
+
+## Official SDKs
+
+All SDKs share the same Rust core, ensuring consistent parsing and serialization behavior. The JS packages are split by runtime target, but `@ttoon/node` and `@ttoon/web` are thin re-exports of `@ttoon/shared`.
+
+| Language | Package | Architecture |
+| :--- | :--- | :--- |
+| Python | `ttoon` | Rust core via PyO3 |
+| JS / TS | `@ttoon/shared` | Rust core via WASM |
+| Node.js | `@ttoon/node` | Re-exports shared |
+| Web | `@ttoon/web` | Re-exports shared |
+| Rust | `ttoon-core` | Core engine |
+
 ## Verify Installation
 
-### Python
+<Tabs>
+<TabItem value="python" label="Python">
 
 ```python
 import ttoon
@@ -93,15 +101,19 @@ print(ttoon.dumps({"hello": "world"}))
 # hello: "world"
 ```
 
-### JavaScript
+</TabItem>
+<TabItem value="js" label="JavaScript">
 
 ```ts
-import { stringify } from '@ttoon/shared';
+import { initWasm, stringify } from '@ttoon/shared';
+
+await initWasm();
 console.log(stringify({ hello: 'world' }));
 // hello: "world"
 ```
 
-### Rust
+</TabItem>
+<TabItem value="rust" label="Rust">
 
 ```rust
 use ttoon_core::{from_ttoon, to_ttoon};
@@ -109,3 +121,6 @@ let node = from_ttoon("hello: \"world\"").unwrap();
 let text = to_ttoon(&node, None).unwrap();
 assert_eq!(text, "hello: \"world\"\n");
 ```
+
+</TabItem>
+</Tabs>

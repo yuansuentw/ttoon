@@ -26,7 +26,7 @@ bash op/sync_public.sh
 
 - private workflow: manual trigger, with tests, build, and local package checks
 - public workflow: no tests, build and package only, plus release artifacts
-- public release does not publish to PyPI, npm, or crates.io; it only emits local-install artifacts
+- registry publication is currently handled separately from the public workflow; the workflow itself builds release artifacts, while maintainers publish to PyPI, npm, and crates.io as part of the release process
 
 ## Package and Release Artifacts
 
@@ -36,7 +36,7 @@ The public release currently produces three artifact groups:
 - JavaScript: `.tgz` packages for `@ttoon/shared`, `@ttoon/node`, and `@ttoon/web`
 - Rust: `.crate` for `ttoon-core`
 
-See [Installation](../getting-started/installation.md) for the actual local-install commands.
+Published packages are available on PyPI (`ttoon`), npm (`@ttoon/shared`, `@ttoon/node`, `@ttoon/web`), and crates.io (`ttoon-core`). See [Installation](../getting-started/installation.md) for the public install commands.
 
 ## Benchmark and Dataset
 

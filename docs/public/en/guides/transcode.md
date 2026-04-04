@@ -31,7 +31,7 @@ ttoon_text = ttoon.tjson_to_ttoon('{"name": "Alice", "scores": [95, 87]}')
 
 # T-TOON → T-JSON
 tjson_text = ttoon.ttoon_to_tjson('name: "Alice"\nage: 30')
-# {"age": 30, "name": "Alice"}
+# {"name": "Alice", "age": 30}
 ```
 
 **Options:**

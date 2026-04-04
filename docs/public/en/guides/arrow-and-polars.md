@@ -11,10 +11,10 @@ TTOON maintains two independent processing paths: the **object path** (general-p
 
 ## Why a Separate Arrow Path?
 
-The Arrow path writes and reads columnar data directly, bypassing IR and language-native objects entirely. For tabular data, this means:
+The Arrow path keeps tabular data in Arrow-native columnar form instead of language-native objects. Today, the strongest fast path is T-JSON → Arrow direct read; T-TOON tabular still interoperates through the compatibility `Node` route. For tabular data, this means:
 
-- **No row-by-row conversion** — data moves directly between Arrow columnar format and T-TOON/T-JSON text
-- **Minimal memory allocation** — no intermediate `dict`, `object`, or IR trees
+- **No language-native row materialization on the Arrow side** — data stays columnar instead of becoming `dict` / JS object rows
+- **Lower conversion overhead where direct paths exist** — especially for T-JSON → Arrow reads
 - **Native type preservation** — `Decimal128`, `Date32`, `Timestamp`, `FixedSizeBinary(16)` (UUID) stay in their Arrow-native forms
 
 ## Python: Polars & PyArrow
@@ -158,5 +158,5 @@ The JS Arrow bridge does not allow mixing timezone-aware and naive datetimes wit
 ## Next Steps
 
 - **[Streaming Guide](streaming.md)** — Row-by-row Arrow streaming with `ArrowStreamReader` / `ArrowStreamWriter`
-- **[Type Mapping](../reference/type-mapping.md)** — Complete cross-language type table
-- **[Stream Schema](../reference/stream-schema.md)** — Schema definitions for streaming
+- **[Type Mapping](../getting-started/format-overview.md)** — Complete cross-language type table
+- **[Stream API](../reference/stream-api.md)** — Streaming APIs and schema definitions

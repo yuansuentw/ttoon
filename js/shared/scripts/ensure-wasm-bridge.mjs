@@ -6,9 +6,14 @@ import { spawnSync } from 'node:child_process';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '../../..');
 const wasmBridgeDir = path.join(repoRoot, 'rust', 'crates', 'wasm-bridge');
-const wasmBridgePkg = path.join(wasmBridgeDir, 'pkg', 'package.json');
+const wasmBridgePkgDir = path.join(wasmBridgeDir, 'pkg');
+const wasmBridgeFiles = [
+  'package.json',
+  'ttoon_wasm_bridge.js',
+  'ttoon_wasm_bridge_bg.wasm',
+];
 
-if (existsSync(wasmBridgePkg)) {
+if (wasmBridgeFiles.every((file) => existsSync(path.join(wasmBridgePkgDir, file)))) {
   process.stdout.write('[js] wasm bridge pkg already present\n');
   process.exit(0);
 }
@@ -32,8 +37,8 @@ if (result.status !== 0) {
   process.exit(result.status ?? 1);
 }
 
-if (!existsSync(wasmBridgePkg)) {
-  process.stderr.write('[js] error: wasm-pack completed but pkg/package.json was not generated.\n');
+if (!wasmBridgeFiles.every((file) => existsSync(path.join(wasmBridgePkgDir, file)))) {
+  process.stderr.write('[js] error: wasm-pack completed but required pkg artifacts are still missing.\n');
   process.exit(1);
 }
 

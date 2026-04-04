@@ -34,9 +34,9 @@ ttoon.loads('key: "hello"', mode="strict")
 
 `strict` mode is best for machine-generated data. Use `compat` for hand-typed content.
 
-### `mode` only affects T-TOON
+### `mode` mostly affects T-TOON
 
-The `mode` parameter has no effect on T-JSON parsing — T-JSON is always strict. This is by design, since T-JSON follows JSON structural rules.
+For batch parsing and direct transcode, the `mode` parameter has no effect on T-JSON parsing — T-JSON remains structurally strict by design. The exception is schema-driven T-JSON streaming readers, where `mode` controls whether unknown fields are discarded (`compat`) or rejected (`strict`).
 
 ## Arrow Issues
 
@@ -65,7 +65,7 @@ npm install apache-arrow
 
 - Codecs registered via `use()` are global. Ensure `await use(...)` completes before parsing.
 - Per-call `codecs` in `ParseOptions` override global codecs for that call only.
-- Codecs do not affect Arrow paths — only the object path (`parse()` / `stringify()`).
+- Codecs do not affect Arrow paths. They apply to the JS object path, including `parse()`, `stringify()`, `toTjson()`, and object-path streaming readers/writers.
 
 ### TranscodeError wrapping
 
@@ -90,7 +90,7 @@ try {
 `dumps()` auto-detects Polars DataFrame and PyArrow Table/RecordBatch. If detection fails:
 
 - Ensure `polars` and/or `pyarrow` are installed
-- Pass Arrow tables explicitly to `read_arrow()` or `stringify_arrow_tjson()`
+- Pass Arrow tables explicitly to `dumps()` or `stringify_arrow_tjson()`
 
 ### `to_tjson()` does not accept Arrow input
 

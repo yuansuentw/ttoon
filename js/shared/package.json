@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "TTOON typed serialization format — JavaScript/TypeScript implementation",
   "type": "module",
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
@@ -12,10 +12,6 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
       }
     }
   },
@@ -24,12 +20,21 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "postbuild": "node scripts/vendor-wasm-bridge.mjs",
     "prepack": "npm run build",
     "test": "node --import tsx --import ./src/__tests__/setup.ts --test src/__tests__/*.test.ts"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "homepage": "https://ttoon.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuansuentw/ttoon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yuansuentw/ttoon/issues"
   },
   "peerDependencies": {
     "apache-arrow": ">=14",
@@ -47,9 +52,6 @@
       "optional": true
     }
   },
-  "dependencies": {
-    "ttoon-wasm-bridge": "file:../../rust/crates/wasm-bridge/pkg"
-  },
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
@@ -57,7 +59,8 @@
     "apache-arrow": "^18.0.0",
     "big.js": "^6.0.0",
     "@types/big.js": "^6.0.0",
-    "decimal.js": "^10.0.0"
+    "decimal.js": "^10.0.0",
+    "ttoon-wasm-bridge": "file:../../rust/crates/wasm-bridge/pkg"
   },
   "keywords": ["ttoon", "t-toon", "t-json", "serialization", "parser", "arrow"],
   "license": "MIT"

@@ -210,4 +210,4 @@ match from_ttoon(text) {
 
 - **[Arrow & Polars Guide](arrow-and-polars.md)** — Tabular path details
 - **[Streaming Guide](streaming.md)** — Row-by-row processing patterns
-- **[Rust API Reference](../reference/rust-api.md)** — Complete API signatures
+- **[API Matrix](../reference/api-matrix.md)** — Entry point to the grouped batch and stream API references

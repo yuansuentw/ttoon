@@ -5,68 +5,108 @@ sidebar_label: T-TOON vs T-JSON
 description: Detailed comparison between T-TOON (indentation-based) and T-JSON (bracket-based) syntaxes.
 ---
 
+import CodeBlock from '@theme/CodeBlock';
+
 # T-TOON vs T-JSON
 
 TTOON provides two syntaxes for different scenarios. Both share the same typed value layer — the difference is purely structural.
 
-## Side-by-Side Comparison
+T-TOON is the typed extension of [TOON](https://toonformat.dev/) from the [toon-format project](https://github.com/toon-format/toon). In other words, the T-TOON side of this comparison inherits TOON's indentation-based object syntax and native tabular header, while T-JSON is the bracket-based companion syntax added by TTOON.
+
+## Comparison Examples
 
 ### Simple Object
 
-**T-TOON:**
-```text
-name: "Alice"
+<div className="cmp-grid">
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-TOON</div>
+    <CodeBlock language="text">{`name: "Alice"
 age: 30
-active: true
-```
-
-**T-JSON:**
-```text
-{"active": true, "age": 30, "name": "Alice"}
-```
+active: true`}</CodeBlock>
+  </div>
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-JSON</div>
+    <CodeBlock language="json">{`{
+  "name": "Alice",
+  "age": 30,
+  "active": true
+}`}</CodeBlock>
+  </div>
+</div>
 
 ### Nested Object
 
-**T-TOON:**
-```text
-user:
+<div className="cmp-grid">
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-TOON</div>
+    <CodeBlock language="text">{`user:
   name: "Alice"
   address:
     city: "Taipei"
-    zip: "100"
-```
-
-**T-JSON:**
-```text
-{"user": {"address": {"city": "Taipei", "zip": "100"}, "name": "Alice"}}
-```
+    zip: "100"`}</CodeBlock>
+  </div>
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-JSON</div>
+    <CodeBlock language="json">{`{
+  "user": {
+    "name": "Alice",
+    "address": {
+      "city": "Taipei",
+      "zip": "100"
+    }
+  }
+}`}</CodeBlock>
+  </div>
+</div>
 
 ### Array
 
-**T-TOON:**
-```text
-scores[3]: 95, 87, 92
-```
-
-**T-JSON:**
-```text
-[95, 87, 92]
-```
+<div className="cmp-grid">
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-TOON</div>
+    <CodeBlock language="text">{`scores[3]: 95, 87, 92`}</CodeBlock>
+  </div>
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-JSON</div>
+    <CodeBlock language="json">{`[
+  95,
+  87,
+  92
+]`}</CodeBlock>
+  </div>
+</div>
 
 ### Tabular Data (List of Uniform Objects)
 
-**T-TOON:**
-```text
-[3]{name,score,grade}:
+<div className="cmp-grid">
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-TOON</div>
+    <CodeBlock language="text">{`[3]{name,score,grade}:
 "Alice", 95, "A"
 "Bob", 87, "B"
-"Carol", 92, "A"
-```
-
-**T-JSON:**
-```text
-[{"grade": "A", "name": "Alice", "score": 95}, {"grade": "B", "name": "Bob", "score": 87}, {"grade": "A", "name": "Carol", "score": 92}]
-```
+"Carol", 92, "A"`}</CodeBlock>
+  </div>
+  <div className="cmp-card">
+    <div className="cmp-card__label">T-JSON</div>
+    <CodeBlock language="json">{`[
+  {
+    "name": "Alice",
+    "score": 95,
+    "grade": "A"
+  },
+  {
+    "name": "Bob",
+    "score": 87,
+    "grade": "B"
+  },
+  {
+    "name": "Carol",
+    "score": 92,
+    "grade": "A"
+  }
+]`}</CodeBlock>
+  </div>
+</div>
 
 ### Typed Values
 
@@ -140,8 +180,13 @@ tjson_text = ttoon.ttoon_to_tjson('name: "Alice"\nage: 30')
 ```ts
 import { tjsonToTtoon, ttoonToTjson } from '@ttoon/shared';
 
-const ttoonText = tjsonToTtoon('{"name": "Alice", "age": 30}');
-const tjsonText = ttoonToTjson('name: "Alice"\nage: 30');
+const ttoonText = tjsonToTtoon(`{
+  "name": "Alice",
+  "age": 30
+}`);
+
+const tjsonText = ttoonToTjson(`name: "Alice"
+age: 30`);
 ```
 
 See the [Transcode Guide](../guides/transcode.md) for details.

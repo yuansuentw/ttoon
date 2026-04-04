@@ -9,6 +9,14 @@ description: Cross-language API comparison for Rust, JavaScript, and Python — 
 
 All three TTOON SDKs provide a fully aligned API surface: **18/18** across Rust, JavaScript, and Python.
 
+## Grouped Reference Pages
+
+The detailed API reference is organized by workload instead of by language:
+
+- **[T-TOON Batch API](./ttoon-batch-api.md)** — batch read / write / transcode APIs centered on T-TOON text
+- **[T-JSON Batch API](./tjson-batch-api.md)** — batch read / write / transcode APIs centered on T-JSON text
+- **[Stream API](./stream-api.md)** — streaming readers and writers for both formats
+
 ## Batch Deserialization
 
 | Capability | Rust | JavaScript | Python |

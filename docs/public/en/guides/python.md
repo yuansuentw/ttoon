@@ -190,4 +190,4 @@ Parse errors include line/column information for diagnostics.
 
 - **[Arrow & Polars Guide](arrow-and-polars.md)** — Deep dive into tabular paths
 - **[Streaming Guide](streaming.md)** — Row-by-row processing
-- **[Python API Reference](../reference/python-api.md)** — Complete API signatures
+- **[API Matrix](../reference/api-matrix.md)** — Entry point to the grouped batch and stream API references

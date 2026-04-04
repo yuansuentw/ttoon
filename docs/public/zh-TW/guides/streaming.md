@@ -1,11 +1,11 @@
 ---
-title: 串流指南 (Streaming Guide)
+title: 串流指南
 sidebar_position: 6
 sidebar_label: 串流
 description: 用於 T-TOON 和 T-JSON 的逐行串流讀取器與寫入器，提供物件和 Arrow 變體。
 ---
 
-# 串流指南 (Streaming Guide)
+# 串流指南
 
 TTOON 在兩種格式 (T-TOON, T-JSON) 和兩條路徑 (物件, Arrow) 之間提供了 8 種串流讀寫器組合。所有串流操作都需要定義欄位名稱和型別的 `StreamSchema`。
 
@@ -59,7 +59,7 @@ let schema = StreamSchema::new([
 ]);
 ```
 
-### 可用型別 (Available Types)
+### 可用型別
 
 | 型別規格 | Python | JavaScript |描述 |
 | :--- | :--- | :--- | :--- |
@@ -154,6 +154,7 @@ T-JSON 串流使用最頂層的 JSON 物件陣列格式。
 ```python
 with ttoon.stream_writer_tjson(sink, schema=schema) as writer:
     writer.write({"name": "Alice", "score": 95})
+    writer.write({"name": "Bob", "score": 87})
 ```
 
 輸出：
@@ -181,6 +182,8 @@ await writer.close();
 for row in ttoon.stream_read_tjson(source, schema=schema):
     print(row)
 ```
+
+對 T-JSON 串流 reader 而言，`mode` 只影響 schema 外欄位的處理方式，不會放寬 JSON 值語法本身。
 
 #### JavaScript / TypeScript
 
@@ -236,25 +239,25 @@ for await (const batch of streamReadArrow(source, { schema, batchSize: 1024 })) 
 
 ## 選項
 
-### 寫入器選項 (Writer Options)
+### 寫入器選項
 
 | 選項 | T-TOON 寫入器 | T-JSON 寫入器 | 說明 |
 | :--- | :--- | :--- | :--- |
 | `schema` | 必要 | 必要 | 欄位定義 |
 | `delimiter` | 是 | 否 | `","`, `"\t"`, `"|"` |
 | `binary_format` / `binaryFormat` | 是 | 是 | `"hex"` 或是 `"b64"` |
-| `codecs` | 僅物件寫入器 | 僅物件寫入器 | 複寫編解碼器 |
+| `codecs` | 僅物件寫入器 | 僅物件寫入器 | 覆寫 codec |
 
-### 讀取器選項 (Reader Options)
+### 讀取器選項
 
 | 選項 | 所有讀取器 | Arrow 讀取器 | 說明 |
 | :--- | :--- | :--- | :--- |
 | `schema` | 必要 | 必要 | 欄位定義 |
-| `mode` | 是 | 是 | `"compat"` 或是 `"strict"` |
-| `codecs` | 僅物件讀取器 | 否 | 複寫編解碼器 |
+| `mode` | 是 | 是 | `"compat"` 或是 `"strict"`；對 T-JSON 串流來說，主要控制 schema 外欄位的處理方式 |
+| `codecs` | 僅物件讀取器 | 否 | 覆寫 codec |
 | `batch_size` / `batchSize` | 否 | 是 | 每個 Arrow 批次的行數 (預設 1024) |
 
-## JS 來源/接收器的靈活性 (Source/Sink Flexibility)
+## JS 來源/接收器的靈活性
 
 JS 串流接受多種 source 和 sink 的型別：
 

@@ -2,12 +2,12 @@
 title: Python 指南
 sidebar_position: 1
 sidebar_label: Python
-description: 使用 Python 操作 TTOON 的完整指南 — 包含批次處理、Arrow、Polars、串流與編解碼器。
+description: 使用 Python 操作 TTOON 的完整指南 — 包含批次處理、Arrow、Polars、串流與 codec。
 ---
 
 # Python 指南
 
-`ttoon` Python 套件透過 PyO3 包裝了 Rust 核心引擎。它在物件路徑上提供 Python 原生型別，並在表格路徑上提供零拷貝 (zero-copy) 的 Arrow 整合。
+`ttoon` Python 套件透過 PyO3 包裝了 Rust 核心引擎。它在物件路徑上提供 Python 原生型別，並在表格路徑上提供零複製 (zero-copy) 的 Arrow 整合。
 
 ## 安裝
 
@@ -20,7 +20,7 @@ pip install pyarrow polars
 
 wheel 套件已經依賴 `pyarrow>=23.0.0` 和 `polars>=1.37.1`；額外的指令只需要在最簡的或基於原始碼安裝的環境中執行。
 
-## 批次操作 (Batch Operations)
+## 批次操作
 
 ### 序列化：`dumps()`
 
@@ -111,7 +111,7 @@ table = ttoon.read_arrow(text)  # 回傳 pyarrow.Table
 
 輸入必須是統一物件的列表。欄位型別是從資料中推論而來的。結構性欄位 (list/object) 不能被 Arrow 化。
 
-## 直接轉碼 (Direct Transcode)
+## 直接轉碼
 
 在不具現化 Python 物件的情況下轉換格式：
 
@@ -129,11 +129,11 @@ tjson_text = ttoon.ttoon_to_tjson(
 )
 ```
 
-文字只會經過 Rust IR — 所有的具型別語意都被完全保留。
+文字只會經過 Rust IR — 所有的 typed 語意都被完全保留。
 
-## 註冊編解碼器 (Codec Registration)
+## 註冊 codec
 
-註冊全域的編解碼器來客製化值的轉換方式：
+註冊全域的 codec 來客製化值的轉換方式：
 
 ```python
 ttoon.use({
@@ -142,16 +142,16 @@ ttoon.use({
 })
 ```
 
-編解碼器的值可以是：
+codec 的值可以是：
 
-- 帶有 `"encode"` / `"decode"` 鍵 (他們對應的值為 callable) 的 Mapping
+- 帶有 `"encode"` / `"decode"` 鍵（其值為 callable）的 Mapping
 - 暴露了 `encode(value)` / `decode(value)` 方法的物件
 
-每一個勾點 (hook) 都是選用的，但一個編解碼器必須提供至少一個可被呼叫的勾點。Python 的編解碼器只會影響物件路徑的串流讀取器與寫入器。它們不會改變 `loads()`、`to_tjson()`、Arrow 讀寫器或直接轉碼的 API。
+每個 hook 都是選用的，但一個 codec 至少要提供一個可呼叫的 hook。Python 的 codec 只會影響物件路徑的串流讀取器與寫入器，不會改變 `loads()`、`to_tjson()`、Arrow 讀寫器或直接轉碼 API。
 
-## 串流 (Streaming)
+## 串流
 
-若要進行逐行處理，請參閱 [串流指南 (Streaming Guide)](streaming.md)。Python 串流 API 支援 context manager 以及 Python 迭代器：
+若要進行逐行處理，請參閱 [串流指南](streaming.md)。Python 串流 API 支援 context manager 以及 Python 迭代器：
 
 ```python
 import ttoon
@@ -190,4 +190,4 @@ except TranscodeError as e:
 
 - **[Arrow 與 Polars 指南](arrow-and-polars.md)** — 深入探索表格路徑
 - **[串流指南](streaming.md)** — 逐行處理
-- **[Python API 參考資料](../reference/python-api.md)** — 完整的 API 簽名
+- **[API 矩陣](../reference/api-matrix.md)** — 進入重新分組後的 batch / stream API 參考入口

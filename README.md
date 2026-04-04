@@ -1,49 +1,50 @@
 # TTOON
 
+TTOON is a typed plain text interchange system for modern data workflows.
+It provides two complementary syntaxes under one project:
 
-TTOON is a **typed plain text** data exchange format engineered for modern data workflows. It provides two complementary syntaxes:
+- `T-TOON`: indentation-based text extended from TOON v3.0
+- `T-JSON`: JSON-compatible containers with the same typed value model at the leaf level
 
-- `T-TOON` — a clean, indentation-based structure with native tabular layout for datasets.
-- `T-JSON` — a JSON-like structure that preserves typed value syntax at the leaf level.
+They are not separate products. Both syntaxes share the same typed model and the same Rust core implementation.
 
-TTOON's core goals:
+## Key Ideas
 
-- **Type fidelity** — Preserve data types across Python ↔ Rust ↔ JS boundaries.
-- **Human readable** — Plain text you can read, diff, and debug visually.
-- **High performance** — Arrow / Polars zero-copy paths for tabular data.
-- **Cross-language** — Identical behavior via shared Rust core engine.
+- Typed values are first-class: `date`, `time`, `datetime`, `decimal`, `uuid`, `hex`, and `b64` are part of the format model instead of string conventions.
+- One core, multiple SDKs: Python, JavaScript, and Rust all route to the same Rust core for parsing and serialization semantics.
+- Two processing paths: use object path for language-native values, or Arrow path for direct columnar workflows.
 
-## Official SDKs
+## Minimal Examples
 
-| Language | Package |
-| :--- | :--- |
-| **Python** | `ttoon` |
-| **JavaScript / TypeScript** | `@ttoon/shared` |
-| **JavaScript / Node.js** | `@ttoon/node` |
-| **JavaScript / Web** | `@ttoon/web` |
-| **Rust** | `ttoon-core` |
+`T-TOON`
 
-## Quick Examples
-
-### Python
-
-```python
-import ttoon
-
-text = ttoon.dumps({"name": "Alice", "amount": 123.45})
-data = ttoon.loads(text)
+```ttoon
+user:
+  id: uuid(550e8400-e29b-41d4-a716-446655440000)
+  name: "Alice"
+  joined_at: 2026-03-08T14:30:00Z
+  balance: 123.45m
+  avatar: b64(SGVsbG8=)
 ```
 
-### TypeScript
+`T-JSON`
 
-```ts
-import { parse, stringify } from '@ttoon/shared';
-
-const text = stringify({ name: 'Alice', enabled: true });
-const data = parse(text);
+```json
+{
+  "user": {
+    "id": uuid(550e8400-e29b-41d4-a716-446655440000),
+    "name": "Alice",
+    "joined_at": 2026-03-08T14:30:00Z,
+    "balance": 123.45m,
+    "avatar": b64(SGVsbG8=)
+  }
+}
 ```
 
-## Documentation
+Both forms carry the same typed model. Values such as `uuid(...)`, `2026-03-08T14:30:00Z`, `123.45m`, and `b64(...)` are typed values instead of plain strings.
 
-- **English**: [en/](/docs/public/en/README.md)
-- **繁體中文**: [zh-TW/](/docs/public/zh-TW/README.md)
+## Language Index
+
+- English: [en/README.md](docs/public/en/README.md)
+- 繁體中文: [zh-TW/README.md](docs/public/zh-TW/README.md)
+- Official site: [ttoon.dev](https://ttoon.dev/)

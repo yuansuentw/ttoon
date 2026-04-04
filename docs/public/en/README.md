@@ -1,50 +1,40 @@
-# TTOON
+# TTOON Documentation Index
 
+## Getting Started
 
-TTOON is a **typed plain text** data exchange format engineered for modern data workflows. It provides two complementary syntaxes — T-TOON (indentation-based) and T-JSON (bracket-based) — with full SDK support for Python, JavaScript/TypeScript, and Rust.
+- [Introduction](intro.md) — technical overview of formats, SDKs, and processing paths
+- [Installation](getting-started/installation.md) — package install commands and environment notes
+- [Quick Start](getting-started/quick-start.md) — first parse / stringify round trip
+- [Format Overview](getting-started/format-overview.md) — T-TOON, T-JSON, typed values, and tabular syntax
+- Or visit our official website [ttoon.dev](https://ttoon.dev/).
 
-## Documentation
+## Concepts
 
-### Getting Started
+- [Why TTOON?](concepts/why-ttoon.md) — format design goals and expected use cases
+- [T-TOON vs T-JSON](concepts/ttoon-vs-tjson.md) — structural and behavioral differences
+- [Parse Modes](concepts/parse-modes.md) — `compat` and `strict`
+- [Object Path vs Arrow Path](concepts/object-path-vs-arrow-path.md) — native object flow vs columnar flow
+- [Performance](concepts/performance.md) — benchmark framing and performance model
 
-- [Introduction](intro.md) — What TTOON is and why it exists
-- [Installation](getting-started/installation.md) — Set up TTOON in your project
-- [Quick Start](getting-started/quick-start.md) — Your first round trip
-- [Format Overview](getting-started/format-overview.md) — Understand the two syntaxes
+## Guides
 
-### Concepts
+- [Python](guides/python.md) — Python object path, Arrow path, and common patterns
+- [JavaScript / TypeScript](guides/js-ts.md) — JS APIs, packages, and environment notes
+- [Rust](guides/rust.md) — crate-level usage and options
+- [Transcode](guides/transcode.md) — direct `T-TOON` / `T-JSON` conversion
+- [Arrow and Polars](guides/arrow-and-polars.md) — tabular and columnar workflows
+- [Streaming](guides/streaming.md) — row-by-row readers and writers
+- [JS Codecs and Int64](guides/js-codecs-and-int64.md) — JS codecs, `BigInt`, and precision handling
+- [Benchmarks](guides/benchmarks.md) — suite layout, datasets, and commands
+- [Contributors](guides/contributors.md) — public-doc sync and release prep
 
-- [Why TTOON?](concepts/why-ttoon.md) — Motivation, positioning, and use cases
-- [T-TOON vs T-JSON](concepts/ttoon-vs-tjson.md) — Detailed syntax comparison
-- [Typed Values](concepts/typed-values.md) — The 12 typed value encodings
-- [Parse Modes](concepts/parse-modes.md) — `compat` vs `strict` mode
-- [Object Path vs Arrow Path](concepts/object-path-vs-arrow-path.md) — Two processing paths
+## Reference
 
-### Guides
-
-- [Contributors](guides/contributors.md) — doc sources, sync flow, and release prep
-- [Benchmarks](guides/benchmarks.md) — benchmark suite, datasets, and common commands
-- [Python](guides/python.md) — Complete Python usage guide
-- [JavaScript / TypeScript](guides/js-ts.md) — Complete JS/TS usage guide
-- [Rust](guides/rust.md) — Complete Rust usage guide
-- [Transcode](guides/transcode.md) — Direct T-JSON ↔ T-TOON conversion
-- [Arrow & Polars](guides/arrow-and-polars.md) — High-performance tabular paths
-- [Streaming](guides/streaming.md) — Row-by-row readers and writers
-- [JS Codecs & Int64](guides/js-codecs-and-int64.md) — Custom type mapping in JS
-
-### Reference
-
-- [API Matrix](reference/api-matrix.md) — Cross-language API comparison (18/18 parity)
-- [Python API](reference/python-api.md) — Complete Python API reference
-- [JS API](reference/js-api.md) — Complete JavaScript/TypeScript API reference
-- [Rust API](reference/rust-api.md) — Complete Rust API reference
-- [Type Mapping](reference/type-mapping.md) — Cross-language type conversion table
-- [Stream Schema](reference/stream-schema.md) — Schema definitions for streaming
-- [Format Detection](reference/format-detection.md) — How format auto-detection works
-- [Behaviors & Limitations](reference/behaviors-and-limitations.md) — Edge cases and constraints
-- [Troubleshooting](reference/troubleshooting.md) — Common errors and fixes
-
-### Contributors
-
-- [Contributors Guide](guides/contributors.md) — maintainer and doc contributor entry point
-- [Benchmark Guide](guides/benchmarks.md) — benchmark suite, dataset auto-download, and result outputs
+- [Typed Value Reference](reference/typed-value-reference.md) — the 12 typed types and encoding rules
+- [API Matrix](reference/api-matrix.md) — cross-language API coverage
+- [T-TOON Batch API](reference/ttoon-batch-api.md) — non-streaming APIs centered on T-TOON text
+- [T-JSON Batch API](reference/tjson-batch-api.md) — non-streaming APIs centered on T-JSON text
+- [Stream API](reference/stream-api.md) — stream readers, writers, and schema types
+- [Format Detection](reference/format-detection.md) — `ttoon`, `tjson`, and `typed_unit` detection rules
+- [Behaviors and Limitations](reference/behaviors-and-limitations.md) — edge cases and explicit constraints
+- [Troubleshooting](reference/troubleshooting.md) — common failure modes and diagnosis

@@ -20,6 +20,14 @@
   "publishConfig": {
     "access": "public"
   },
+  "homepage": "https://ttoon.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuansuentw/ttoon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yuansuentw/ttoon/issues"
+  },
   "dependencies": {
     "@ttoon/shared": "0.1.0"
   },

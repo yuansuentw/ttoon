@@ -15,7 +15,7 @@ description: 使用 Rust 操作 TTOON 的完整指南 — 包含批次處理、A
 cargo add ttoon-core
 ```
 
-## 批次操作 (Batch Operations)
+## 批次操作
 
 ### 反序列化：`from_ttoon()`
 
@@ -87,7 +87,7 @@ let tjson = arrow_to_tjson(&table, None)?;
 
 `read_arrow()` 會自動偵測格式。輸入必須是具有純量欄位值的統一物件列表。
 
-## 直接轉碼 (Direct Transcode)
+## 直接轉碼
 
 ```rust
 use ttoon_core::{tjson_to_ttoon, ttoon_to_tjson, ParseMode};
@@ -99,7 +99,7 @@ let ttoon = tjson_to_ttoon(r#"{"key": 42}"#, None)?;
 let tjson = ttoon_to_tjson("key: 42", ParseMode::Compat, None)?;
 ```
 
-## 串流 (Streaming)
+## 串流
 
 ### Schema 定義
 
@@ -145,7 +145,7 @@ let row = StreamReader::new(Cursor::new(text), schema.clone())
 let mut writer = StreamWriter::new(Vec::new(), schema, TtoonOptions::default());
 writer.write(&row)?;
 let result = writer.close()?;
-println!("輸出的資料列數: {}", result.rows_emitted);
+println!("rows emitted: {}", result.rows_emitted);
 ```
 
 ### T-JSON 串流
@@ -210,4 +210,4 @@ match from_ttoon(text) {
 
 - **[Arrow 與 Polars 指南](arrow-and-polars.md)** — 表格路徑詳細資訊
 - **[串流指南](streaming.md)** — 逐行處理模式
-- **[Rust API 參考資料](../reference/rust-api.md)** — 完整的 API 簽名
+- **[API 矩陣](../reference/api-matrix.md)** — 進入重新分組後的 batch / stream API 參考入口

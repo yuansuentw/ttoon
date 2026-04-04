@@ -1,13 +1,13 @@
 ---
-title: 直接轉碼 (Direct Transcode)
+title: 直接轉碼
 sidebar_position: 4
 sidebar_label: 轉碼
 description: 在不具現化特定語言原生物件的情況下，直接在 T-JSON 和 T-TOON 之間轉換。
 ---
 
-# 直接轉碼 (Direct Transcode)
+# 直接轉碼
 
-TTOON 提供直接轉碼的 API，只需通過 Rust 的內部表示 (IR) 即可在 T-JSON 和 T-TOON 格式之間進行轉換 — 不會具現化任何 Python 物件、JS 值或 Arrow 表格。這種方式以極低的開銷保留了所有的具型別語意 (decimal, uuid, date, binary 等等)。
+TTOON 提供直接轉碼的 API，只需通過 Rust 的內部表示 (IR) 即可在 T-JSON 和 T-TOON 格式之間進行轉換 — 不會具現化任何 Python 物件、JS 值或 Arrow 表格。這種方式以極低的開銷保留了所有的 typed 語意 (decimal, uuid, date, binary 等等)。
 
 ## 它是如何運作的
 
@@ -31,7 +31,7 @@ ttoon_text = ttoon.tjson_to_ttoon('{"name": "Alice", "scores": [95, 87]}')
 
 # T-TOON → T-JSON
 tjson_text = ttoon.ttoon_to_tjson('name: "Alice"\nage: 30')
-# {"age": 30, "name": "Alice"}
+# {"name": "Alice", "age": 30}
 ```
 
 **選項：**
@@ -122,7 +122,7 @@ try {
 
 ## 關鍵行為
 
-- **保留所有具型別值**：`decimal(m)`, `uuid(...)`, `date`, `time`, `datetime`, `hex(...)`, `b64(...)` 全部都能完好無損地在轉換中保留下來。
+- **保留所有 typed value**：`decimal(m)`, `uuid(...)`, `date`, `time`, `datetime`, `hex(...)`, `b64(...)` 全部都能完好無損地在轉換中保留下來。
 - **T-JSON 解析總是嚴格的 (strict)**：`tjson_to_ttoon()` 不接受 `mode` 參數 — 根據定義，T-JSON 便是嚴格的。
 - **T-TOON 解析使用 `mode`**：`ttoon_to_tjson()` 預設為 `compat` 模式，但是可以明確指定為 `strict`。
 - **沒有物件具現化**：在轉換期間，不會建立任何 Python 的 `dict`、JS `object` 或 Arrow 表格。

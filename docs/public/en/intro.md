@@ -2,29 +2,34 @@
 title: Introduction
 sidebar_position: 1
 sidebar_label: Introduction
-description: TTOON — a typed plain text data exchange format for Python, JavaScript, and Rust.
+description: Technical overview of TTOON formats, SDKs, and processing paths.
 ---
 
 # TTOON
 
-TTOON is a **typed plain text** data exchange format engineered for modern data workflows. It provides two complementary syntaxes under one project:
+TTOON is a typed plain text interchange system with two complementary syntaxes under one project:
 
-- **T-TOON** — a clean, indentation-based structure with native tabular layout for datasets.
-- **T-JSON** — a JSON-like structure that preserves typed value syntax at the leaf level.
+- **T-TOON**: indentation-based structure extended from TOON v3.0
+- **T-JSON**: JSON structure with the same typed value system at the leaf level
 
-TTOON is an **independent project**. `T-TOON` is the indentation-based syntax extended from TOON v3.0, while `T-JSON` is the JSON-like structural syntax built on the same typed value system. They are complementary representations within one project, not two unrelated formats.
+They are not separate products. They are two serialization syntaxes backed by the same typed model and the same Rust core implementation.
 
-## Why TTOON?
+## Format Model
 
-Most serialization formats force a trade-off: human readability or machine precision. TTOON refuses that compromise:
+| Syntax | Structure | Typical use |
+| :--- | :--- | :--- |
+| `T-TOON` | indentation-based, supports tabular `[N]{fields}:` blocks | readable config-like data and tabular datasets |
+| `T-JSON` | JSON-compatible structure with typed leaf values | integration points that need JSON-style containers |
 
-- **Type fidelity** — Preserves `decimal`, `date`, `time`, `datetime`, `uuid`, and `binary` across language boundaries, instead of degrading everything to strings.
-- **Human readable** — Plain text output that is easy to read, diff, and debug visually.
-- **High performance** — First-class Apache Arrow and Polars integration with zero-copy paths for tabular data.
-- **Cross-language** — Identical behavior across Python, JavaScript/TypeScript, and Rust via a shared Rust core engine.
-- **Lightweight runtime** — No full Node.js required; works in Vercel functions, Cloudflare Workers, and Supabase Edge functions.
+Both syntaxes support the same typed values. The current typed set covers:
 
-## Official SDKs
+- `null`, `bool`, `int`, `float`, `decimal`, `string`
+- `date`, `time`, `datetime`
+- `uuid`, `hex`, `b64`
+
+See [Typed Value Reference](reference/typed-value-reference.md) for the exact encoding rules and examples.
+
+## SDKs and Shared Core
 
 | Language | Package | Architecture |
 | :--- | :--- | :--- |
@@ -34,52 +39,51 @@ Most serialization formats force a trade-off: human readability or machine preci
 | JavaScript / Web | `@ttoon/web` | Re-exports `@ttoon/shared` |
 | Rust | `ttoon-core` | Core engine (canonical implementation) |
 
-All three language SDKs share the same Rust core, ensuring consistent parsing and serialization behavior. The API surface is fully aligned at 18/18 across all languages — covering batch, streaming, and transcode operations.
+Python, JavaScript, and Rust all route to the same Rust core for parsing and serialization semantics. The public API surface is documented in [API Matrix](reference/api-matrix.md).
 
-## Quick Example
+## Processing Paths
 
-### Python
+TTOON exposes two execution paths across the SDKs:
 
-```python
-import ttoon
+- **object path**: parse into language-native objects and serialize from native objects
+- **Arrow path**: parse and serialize columnar data directly, without materializing row objects first
 
-text = ttoon.dumps({"name": "Alice", "amount": 123.45})
-data = ttoon.loads(text)
+The API surface is also split by I/O style:
+
+- **batch APIs**: parse or stringify whole documents or tables
+- **stream APIs**: read or write row-by-row with schema-driven contracts
+
+See:
+
+- [Object Path vs Arrow Path](concepts/object-path-vs-arrow-path.md)
+- [T-TOON Batch API](reference/ttoon-batch-api.md)
+- [T-JSON Batch API](reference/tjson-batch-api.md)
+- [Stream API](reference/stream-api.md)
+
+## Minimal Example
+
+```ttoon
+user:
+  id: uuid(550e8400-e29b-41d4-a716-446655440000)
+  name: "Alice"
+  joined: 2026-03-08
+  balance: 123.45m
+tags: [2]:
+  - "alpha"
+  - "beta"
 ```
 
-### JavaScript / TypeScript
+This document round-trips with native typed results instead of collapsing everything to strings:
 
-```ts
-import { parse, stringify } from '@ttoon/shared';
+- `uuid(...)` stays UUID-like instead of a plain string marker
+- `2026-03-08` stays a date value
+- `123.45m` stays decimal
+- tabular and Arrow paths can preserve columnar semantics for datasets
 
-const text = stringify({ name: 'Alice', amount: 123.45 });
-const data = parse(text);
-```
-
-### Rust
-
-```rust
-use ttoon_core::{from_ttoon, to_ttoon};
-
-let node = from_ttoon("name: \"Alice\"\nage: 30")?;
-let text = to_ttoon(&node, None)?;
-```
-
-## Core Capabilities
-
-| Capability | Description |
-| :--- | :--- |
-| **Batch parse / serialize** | `T-TOON` and `T-JSON` in both directions, for objects and Arrow tables |
-| **Streaming I/O** | Row-by-row readers and writers for both formats, with object and Arrow variants |
-| **Direct transcode** | `T-JSON → T-TOON` and `T-TOON → T-JSON` without materializing language-native objects |
-| **Format detection** | Auto-detect `tjson`, `ttoon`, or `typed_unit` from input text |
-| **Schema system** | `StreamSchema` with typed field definitions for streaming operations |
-| **Codec extensibility** | Custom type mapping in JS and Python (e.g., `Decimal`, `BigInt`, `Temporal`) |
-
-## Next Steps
+## Read Next
 
 - **[Installation](getting-started/installation.md)** — Set up TTOON in your project
-- **[Quick Start](getting-started/quick-start.md)** — Your first round trip in 2 minutes
-- **[Format Overview](getting-started/format-overview.md)** — Understand T-TOON and T-JSON syntax
-- **[Why TTOON?](concepts/why-ttoon.md)** — Deeper motivation and use cases
-- **[API Matrix](reference/api-matrix.md)** — Full cross-language API comparison
+- **[Quick Start](getting-started/quick-start.md)** — first end-to-end examples per language
+- **[Format Overview](getting-started/format-overview.md)** — exact syntax and typed value rules
+- **[Typed Value Reference](reference/typed-value-reference.md)** — per-type encoding details
+- **[API Matrix](reference/api-matrix.md)** — cross-language API comparison

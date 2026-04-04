@@ -3,8 +3,6 @@
  *
  * 使用 discriminated union，k 為 kind 的縮寫。
  * 整數以 number 儲存（safe integer 範圍）；超出範圍請用 bigint 選項。
- *
- * @internal
  */
 export type IrNode =
   | { readonly k: 'null' }

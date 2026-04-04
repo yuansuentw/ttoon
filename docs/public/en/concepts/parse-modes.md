@@ -36,10 +36,11 @@ key: true     → OK: bool true
 | :--- | :--- |
 | T-TOON indentation | Yes |
 | T-TOON tabular | Yes |
-| T-JSON | **No** — always strict |
+| T-JSON batch / direct transcode | **No** — structural parsing remains strict |
+| T-JSON streaming with schema | **Yes** — unknown-field handling follows `mode` |
 | Typed unit | Yes |
 
-T-JSON is always strict regardless of the `mode` setting, because T-JSON follows JSON structural rules where all string values are quoted.
+For batch parsing and direct transcode, T-JSON is always strict regardless of the `mode` setting, because T-JSON follows JSON structural rules where all string values are quoted. In schema-driven T-JSON streaming readers, `mode` is still used for schema mismatch policy: `compat` discards unknown fields, while `strict` rejects them. The JSON scalar syntax itself remains strict in both modes.
 
 ## Defaults by Language Surface
 
@@ -91,7 +92,7 @@ let mode = ParseMode::default();                                  // Strict
 | Machine-generated output | `strict` |
 | Cross-language exchange | `strict` (ensures explicit types) |
 | Legacy TOON v3.0 data | `compat` |
-| Streaming with schema | Either (schema enforces types separately) |
+| Streaming with schema | Either (also controls unknown-field policy for T-JSON streaming) |
 
 ## Interaction with Transcode
 

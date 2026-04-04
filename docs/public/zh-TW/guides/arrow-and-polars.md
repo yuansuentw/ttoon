@@ -11,10 +11,10 @@ TTOON 維護兩條獨立的處理路徑：**物件路徑 (object path)** (通用
 
 ## 為何需要獨立的 Arrow 路徑？
 
-Arrow 路徑直接讀寫列式資料 (columnar data)，完全繞過 IR 和語言原生物件。對於表格資料來說，這代表著：
+Arrow 路徑會盡量讓表格資料維持在 Arrow 原生的列式形式，而不是先轉成語言原生物件。現階段最完整的快速路徑是 T-JSON → Arrow 的直接讀取；T-TOON tabular 仍會透過相容的 `Node` 路徑與 Arrow 互通。對表格資料而言，這代表：
 
-- **無需逐行轉換** — 資料能直接在 Arrow 的列式格式與 T-TOON/T-JSON 文字之間移動
-- **極低的記憶體分配** — 無需中介的 `dict`, `object` 或是 IR 樹
+- **不會在 Arrow 端具現化為語言原生的逐列物件** — 資料維持 columnar，而不是先變成 `dict` / JS object rows
+- **在有 direct path 的情況下可降低轉換成本** — 尤其是 T-JSON → Arrow 讀取
 - **保留原生型別** — `Decimal128`, `Date32`, `Timestamp`, `FixedSizeBinary(16)` (UUID) 皆保持在他們原生的 Arrow 形式
 
 ## Python: Polars & PyArrow
@@ -121,9 +121,9 @@ let tjson = arrow_to_tjson(&table, None)?;
 | 欄位型別必須一致 | 不可在同一列 (column) 中混用不同的純量型別 |
 | 不能有結構性欄位 | list/object 的值不能被轉換為 Arrow |
 
-## Arrow Schema 對應 (Mapping)
+## Arrow Schema 對應
 
-| 具型別型別 | Arrow 型別 |
+| typed type | Arrow 型別 |
 | :--- | :--- |
 | `int` | `Int64` |
 | `float` | `Float64` |
@@ -139,13 +139,13 @@ let tjson = arrow_to_tjson(&table, None)?;
 
 Arrow 類型會以其原生的解析度被保存 — `decimal` 不會被降級成 string，`uuid` 是使用 `FixedSizeBinary(16)` 及元資料 (metadata) 所構成的。
 
-## 效能筆記 (Performance Notes)
+## 效能筆記
 
 ### T-JSON 的直接路徑
 
 在 Rust 核心內部包含一個用於 T-JSON → Arrow 的兩次巡訪 (two-pass) 直接路徑 (`read_arrow_tjson_direct`)，它跳過了 Token/Node 的中介層。在面臨龐大的資料集這能顯著的降低記憶體的使用，並透過共享核心來使所有的 SDK 受益。
 
-### 支援稀疏 Schema (Sparse Schema Support)
+### 支援稀疏 Schema
 
 T-JSON 的 `read_arrow()` 支援稀疏行 (sparse rows) — 缺失的鍵會被視為 null。Schema 欄位的順序是從批次內第一筆匹配的順序推論而來。
 
@@ -157,6 +157,6 @@ JS Arrow bridge 並不允許在同一列 (column) 中混雜包含時區以及不
 
 ## 下一步
 
-- **[串流指南 (Streaming Guide)](streaming.md)** — 使用 `ArrowStreamReader` / `ArrowStreamWriter` 進行逐行的 Arrow 串流
-- **[型別對應 (Type Mapping)](../reference/type-mapping.md)** — 完整的跨語言型別對應表
-- **[Stream Schema](../reference/stream-schema.md)** — 串流處理專用的 Schema 定義
+- **[串流指南](streaming.md)** — 使用 `ArrowStreamReader` / `ArrowStreamWriter` 進行逐行的 Arrow 串流
+- **[型別對應](../getting-started/format-overview.md)** — 完整的跨語言型別對應表
+- **[Stream API](../reference/stream-api.md)** — 串流 API 與 schema 定義

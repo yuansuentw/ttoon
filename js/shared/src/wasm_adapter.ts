@@ -28,8 +28,7 @@ import initWasmBridgeRaw, {
 import { wireToIr, irToWire } from './wasm_wire.js';
 import type { SerializeOptions } from './ttoon_serializer.js';
 import type { TjsonSerializeOptions } from './tjson_serializer.js';
-
-type IrNode = import('./ir.js').IrNode;
+import type { IrNode } from './ir.js';
 
 const WASM_INIT_REQUIRED_MESSAGE =
   'ttoon-wasm-bridge is not initialized. Call initWasm() before using @ttoon/shared WASM APIs.';
@@ -39,15 +38,25 @@ let wasmInitPromise: Promise<void> | undefined;
 
 type WasmInitInput = Parameters<typeof initWasmBridgeRaw>[0];
 
+async function resolveDefaultWasmInput(): Promise<WasmInitInput | undefined> {
+  if (!(typeof process !== 'undefined' && process.versions?.node)) {
+    return undefined;
+  }
+  const { readFile } = await import('node:fs/promises');
+  return readFile(new URL('../dist/ttoon_wasm_bridge_bg.wasm', import.meta.url));
+}
+
 export function isWasmInitialized(): boolean {
   return wasmReady;
 }
 
-export function initWasm(input?: WasmInitInput): Promise<void> {
+export async function initWasm(input?: WasmInitInput): Promise<void> {
   if (wasmReady) {
-    return Promise.resolve();
+    return;
   }
-  const promise = wasmInitPromise ??= initWasmBridgeRaw(input)
+  const resolvedInput = input ?? await resolveDefaultWasmInput();
+  const initArg = resolvedInput === undefined ? undefined : { module_or_path: resolvedInput };
+  const promise = wasmInitPromise ??= initWasmBridgeRaw(initArg as WasmInitInput)
     .then(() => {
       wasmReady = true;
     })
@@ -55,7 +64,7 @@ export function initWasm(input?: WasmInitInput): Promise<void> {
       wasmInitPromise = undefined;
       throw error;
     });
-  return promise;
+  await promise;
 }
 
 function assertWasmReady(): void {
